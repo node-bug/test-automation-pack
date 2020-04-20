@@ -37,7 +37,7 @@
       "eslint --fix"
     ]
   },
-  "name": "testautomation",
+  "name": "cucumber-test-automation",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/thomasashwindsilva/testautomation.git"

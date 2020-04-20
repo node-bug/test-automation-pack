@@ -1,3 +1,3 @@
-# logger
+# testautomation
 
-logger from cucumber framework
+cucumber framework for test automation using selenium
