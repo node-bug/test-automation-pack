@@ -1,0 +1,9 @@
+.vscode
+node_modules
+package-lock.json
+**/.DS_Store
+ .prettierrc.json
+ .eslintrc.json
+ .gitignore
+ .npmignore
+ 

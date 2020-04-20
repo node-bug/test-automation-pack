@@ -1,0 +1,49 @@
+{
+  "author": {
+    "name": "Thomas Ashwin DSilva",
+    "email": "thomasashwin.dsilva@outlook.com"
+  },
+  "bugs": {
+    "url": "https://github.com/thomasashwindsilva/testautomation/issues"
+  },
+  "dependencies": {
+    "winston": "^3.2.1"
+  },
+  "description": "cucumber framework for test automation using selenium",
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "latest",
+    "eslint-plugin-import": "^2.20.2",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.1.5",
+    "prettier": "^2.0.4"
+  },
+  "homepage": "https://github.com/thomasashwindsilva/testautomation#readme",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "keywords": [
+    "logger",
+    "cucumber"
+  ],
+  "license": "ISC",
+  "lint-staged": {
+    "*.{json,sh,groovy,feature}": [
+      "prettier --write"
+    ],
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix"
+    ]
+  },
+  "name": "testautomation",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thomasashwindsilva/testautomation.git"
+  },
+  "scripts": {
+    "test": "npm run test"
+  },
+  "version": "0.0.1"
+}
