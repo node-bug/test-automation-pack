@@ -7,7 +7,18 @@
     "url": "https://github.com/thomasashwindsilva/testautomation/issues"
   },
   "dependencies": {
-    "winston": "^3.2.1"
+    "winston": "latest",
+    "selenium-webdriver": "latest",
+    "chromedriver": "latest",
+    "minimist": "latest",
+    "fs": "latest",
+    "jsonfile": "latest",
+    "imagemin": "latest",
+    "imagemin-pngquant": "latest",
+    "chai": "latest",
+    "lodash": "latest",
+    "request-promise-native": "latest",
+    "jsonwebtoken": "latest"
   },
   "description": "cucumber framework for test automation using selenium",
   "devDependencies": {
@@ -33,7 +44,7 @@
     "*.{json,sh,groovy,feature}": [
       "prettier --write"
     ],
-    "*.{js,jsx,ts,tsx}": [
+    "*.{}": [
       "eslint --fix"
     ]
   },
