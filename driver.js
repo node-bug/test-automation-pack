@@ -13,7 +13,7 @@ const fs = require('fs');
 const jsonfile = require('jsonfile');
 const imagemin = require('imagemin');
 const imageminPngquant = require('imagemin-pngquant');
-const rc = require('../config.json');
+const rc = require('../../config.json');
 const { log } = require('./logger');
 
 let driver;

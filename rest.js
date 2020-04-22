@@ -4,7 +4,7 @@ const rp = require('request-promise-native');
 const jsonwebtoken = require('jsonwebtoken');
 const { log } = require('./logger');
 const { config } = require('./driver');
-const uris = require('../config/endpoints.json');
+const uris = require('../../config/endpoints.json');
 
 const cookieMap = new Map();
 

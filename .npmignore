@@ -1,8 +1,7 @@
-.vscode
 node_modules
-package-lock.json
 .prettierrc.json
 .eslintrc.json
 .gitignore
 .npmignore
+package-lock.json
 **/.DS_Store
