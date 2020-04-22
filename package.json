@@ -7,19 +7,19 @@
     "url": "https://github.com/thomasashwindsilva/test-automation-pack/issues"
   },
   "dependencies": {
-    "winston": "latest",
-    "selenium-webdriver": "latest",
+    "chai": "latest",
     "chromedriver": "latest",
-    "geckodriver": "latest",
-    "minimist": "latest",
     "fs": "latest",
-    "jsonfile": "latest",
+    "geckodriver": "latest",
     "imagemin": "latest",
     "imagemin-pngquant": "latest",
-    "chai": "latest",
+    "jsonfile": "latest",
+    "jsonwebtoken": "latest",
     "lodash": "latest",
+    "minimist": "latest",
     "request-promise-native": "latest",
-    "jsonwebtoken": "latest"
+    "selenium-webdriver": "latest",
+    "winston": "latest"
   },
   "description": "framework for test automation using selenium with gherkin support",
   "devDependencies": {
