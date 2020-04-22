@@ -10,6 +10,7 @@ const imagemin = require('imagemin');
 const imageminPngquant = require('imagemin-pngquant');
 const { log } = require('./logger');
 const config = require('./config');
+
 let driver;
 
 const buildDriver = function () {

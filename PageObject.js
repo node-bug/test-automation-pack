@@ -1,8 +1,7 @@
 /**
  * http://usejsdoc.org/
  */
-
-
+"use strict";
 const { assert, expect } = require('chai');
 const jsonfile = require('jsonfile');
 const WebElement = require('./WebElement');
