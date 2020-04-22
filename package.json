@@ -51,7 +51,7 @@
     "*.{json,sh,groovy}": [
       "prettier --write"
     ],
-    "*.{}": [
+    "*.{js,jsx,ts,tsx}": [
       "eslint --fix"
     ]
   },
