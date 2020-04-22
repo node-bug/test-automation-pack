@@ -9,8 +9,6 @@
   "dependencies": {
     "chai": "latest",
     "chromedriver": "latest",
-    "fs": "latest",
-    "geckodriver": "latest",
     "imagemin": "latest",
     "imagemin-pngquant": "latest",
     "jsonfile": "latest",
@@ -62,5 +60,5 @@
   "scripts": {
     "test": "npm run test"
   },
-  "version": "0.0.2"
+  "version": "0.0.3"
 }
