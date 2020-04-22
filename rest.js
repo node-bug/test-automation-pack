@@ -2,6 +2,7 @@ const jsonfile = require('jsonfile');
 const rp = require('request-promise-native');
 const jsonwebtoken = require('jsonwebtoken');
 const { log } = require('./logger');
+
 const cookieMap = new Map();
 
 function RestObject(fullFileName) {
@@ -51,7 +52,7 @@ RestObject.prototype.setRequestCookie = async function () {
 
 RestObject.prototype.setCookie = async function (payload) {
   if (cookieMap.has(payload)) {
-    log.debug(`\nCookie exists for payload. Using existing.\n\n`);
+    log.debug('\nCookie exists for payload. Using existing.\n\n');
     this.cookie = cookieMap.get(payload);
   } else {
     log.debug(`\nCookie does not exist for payload ${JSON.stringify(payload)}\nCreating new cookie.\n\n`);
@@ -109,9 +110,9 @@ RestObject.prototype.POST = async function (url, body) {
   return this.error.statusCode;
 };
 
-RestObject.prototype.response = async function () {return this.response.body;} 
+RestObject.prototype.response = async function () { return this.response.body; };
 
-RestObject.prototype.error = async function () {return this.error};
+RestObject.prototype.error = async function () { return this.error; };
 
 module.exports = {
   RestObject,
@@ -153,4 +154,3 @@ module.exports = {
 // const variables = function () {
 
 // };
-

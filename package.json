@@ -16,7 +16,8 @@
     "minimist": "latest",
     "request-promise-native": "latest",
     "selenium-webdriver": "latest",
-    "winston": "latest"
+    "winston": "latest",
+    "tough-cookie":"latest"
   },
   "description": "framework for test automation using selenium with gherkin support",
   "devDependencies": {

@@ -3,6 +3,7 @@
  */
 const { getDriver, getWebDriver } = require('./driver');
 const { log } = require('./logger');
+
 const that = {};
 
 function WebElement(element) {
