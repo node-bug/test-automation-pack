@@ -6,9 +6,10 @@
 const { assert, expect } = require('chai');
 const jsonfile = require('jsonfile');
 const WebElement = require('./WebElement');
-const { getDriver, getWebDriver, activateTab, closeTabAndSwitch, getURL, getTitle, config } = require('./driver');
+const { getDriver, getWebDriver, activateTab, closeTabAndSwitch, getURL, getTitle } = require('./driver');
 const { log } = require('./logger');
 const { populateInput, populateClick, populateSelect, populateRichTextField } = require('./populate');
+const config = require('./config');
 
 const PageObject = function (pageNameInput, pageNameDirectoryInput) {
   const that = {};

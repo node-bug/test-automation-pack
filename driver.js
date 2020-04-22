@@ -1,41 +1,16 @@
 /**
  * http://usejsdoc.org/
  */
-
-
 const webdriver = require('selenium-webdriver');
 const remote = require('selenium-webdriver/remote');
 const chrome = require('selenium-webdriver/chrome');
 const firefox = require('selenium-webdriver/firefox');
 const chromedriver = require('chromedriver');
-const argv = require('minimist')(process.argv.slice(2));
-const fs = require('fs');
-const jsonfile = require('jsonfile');
 const imagemin = require('imagemin');
 const imageminPngquant = require('imagemin-pngquant');
-const rc = require('../../config.json');
 const { log } = require('./logger');
-
+const config = require('./config');
 let driver;
-
-function getHub() {
-  const grid = (argv.grid || rc.grid);
-  if (grid !== undefined && rc.grids[grid] !== undefined) {
-    return `${rc.grids[grid]}/wd/hub`;
-  }
-}
-
-const config = {
-  environment: argv.env || rc.environment,
-  browser: argv.browser || rc.browser,
-  screenshots: argv.screenshots || rc.screenshots,
-  headless: argv.h || (argv.headless === 'true') || rc.headless,
-  timeout: rc.timeout * 1000,
-  stack: argv.stack || rc.stack || argv.env || rc.environment,
-  capabilities: undefined,
-  datetime: new Date().toISOString(),
-  hub: getHub(),
-};
 
 const buildDriver = function () {
   const driver = new webdriver.Builder();
@@ -293,25 +268,6 @@ process.argv.forEach((val, index, array) => {
   log.debug(`${index}: ${val}`);
 });
 
-process.on('exit', () => {
-  const reportPath = argv.f !== undefined ? (argv.f.indexOf('json:') > -1 ? (`${process.cwd()}/${(argv.f).split(':')[1]}`) : undefined) : undefined;
-  if (reportPath !== undefined) {
-    const metadata = {
-      Browser: config.capabilities.get('browserName').toUpperCase(),
-      'Browser Version': config.capabilities.get('browserVersion').toUpperCase(),
-      Platform: config.capabilities.get('platformName').toUpperCase(),
-      Environment: config.environment.toUpperCase(),
-      Stack: config.stack.toUpperCase(),
-      Grid: config.grid.toUpperCase(),
-      Date: config.datetime.split('T')[0],
-      Time: config.datetime.split('T')[1].split('.')[0],
-    };
-    const contents = jsonfile.readFileSync(reportPath);
-    contents[0].metadata = metadata;
-    jsonfile.writeFileSync(reportPath, contents);
-  }
-});
-
 module.exports = {
   closeBrowser,
   resetBrowser,
@@ -330,6 +286,5 @@ module.exports = {
   onWaitForWebElementToBeDisabled,
   onWaitForElementToBeVisible,
   onWaitForElementToBeInvisible,
-  config,
   sleep,
 };

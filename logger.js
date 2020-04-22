@@ -2,10 +2,7 @@
  * Abstraction for global logger
  */
 const { createLogger, format, transports } = require('winston');
-
-const {
-  colorize, combine, timestamp, printf,
-} = format;
+const { colorize, combine, timestamp, printf } = format;
 
 const log = createLogger({
   level: 'debug',
