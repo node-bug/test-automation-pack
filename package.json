@@ -4,7 +4,7 @@
     "email": "thomasashwin.dsilva@outlook.com"
   },
   "bugs": {
-    "url": "https://github.com/thomasashwindsilva/testautomation/issues"
+    "url": "https://github.com/thomasashwindsilva/test-automation-pack/issues"
   },
   "dependencies": {
     "winston": "latest",
@@ -20,7 +20,7 @@
     "request-promise-native": "latest",
     "jsonwebtoken": "latest"
   },
-  "description": "cucumber framework for test automation using selenium",
+  "description": "framework for test automation using selenium with gherkin support",
   "devDependencies": {
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "latest",
@@ -29,7 +29,7 @@
     "lint-staged": "^10.1.5",
     "prettier": "^2.0.4"
   },
-  "homepage": "https://github.com/thomasashwindsilva/testautomation#readme",
+  "homepage": "https://github.com/thomasashwindsilva/test-automation-pack#readme",
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
@@ -37,21 +37,27 @@
   },
   "keywords": [
     "logger",
-    "cucumber"
+    "cucumber",
+    "selenium",
+    "webdriver",
+    "chromedriver",
+    "request",
+    "rest",
+    "request-promise"
   ],
   "license": "ISC",
   "lint-staged": {
-    "*.{json,sh,groovy,feature}": [
+    "*.{json,sh,groovy}": [
       "prettier --write"
     ],
     "*.{}": [
       "eslint --fix"
     ]
   },
-  "name": "cucumber-test-automation",
+  "name": "test-automation-pack",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/thomasashwindsilva/testautomation.git"
+    "url": "git+https://github.com/thomasashwindsilva/test-automation-pack.git"
   },
   "scripts": {
     "test": "npm run test"
