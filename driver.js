@@ -15,12 +15,12 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const buildDriver = function () {
-  let firefoxOptions; 
+function buildDriver() {
+  let firefoxOptions;
   let firefoxCapabilities;
-  let safariOptions; 
+  let safariOptions;
   let safariCapabilities;
-  let chromeOptions; 
+  let chromeOptions;
   let chromeCapabilities;
   const browser = new webdriver.Builder();
   log.info(`Launching ${config.browser}`);
@@ -81,9 +81,24 @@ const buildDriver = function () {
     browser.usingServer(config.hub);
   }
   return browser.build();
-};
+}
 
 const driver = buildDriver();
+
+const getDriver = () => driver;
+
+const getWebDriver = () => webdriver;
+
+// eslint-disable-next-line no-underscore-dangle
+const getCapabilities = async () => (await driver.getCapabilities()).map_;
+
+const closeCurrentTab = async () => driver.close();
+
+const getTitle = async () => driver.getTitle();
+
+const getURL = async () => driver.getCurrentUrl();
+
+const switchToTab = async (tab) => driver.switchTo().window(tab);
 
 const visitURL = async (url) => {
   log.info(`Loading the url ${url} in the browser.`);
@@ -92,18 +107,6 @@ const visitURL = async (url) => {
   await driver.setFileDetector(new remote.FileDetector());
   await driver.get(url);
   await sleep(2000);
-};
-
-const getDriver = () => {
-  return driver;
-};
-
-const getWebDriver = () => {
-  return webdriver;
-};
-
-const getCapabilities = async () => {
-  return (await driver.getCapabilities()).map_;
 };
 
 const closeBrowser = async () => {
@@ -115,23 +118,26 @@ const closeBrowser = async () => {
 const resetBrowser = async () => {
   const tabs = await driver.getAllWindowHandles();
   if (tabs.length > 1) {
-    for (let index = 1; index < tabs.length; index+=1) {
+    for (let index = 1; index < tabs.length; index += 1) {
+      /* eslint-disable no-await-in-loop */
       await switchToTab(tabs[index]);
       log.info(`Closing tab ${await getTitle()}.`);
       await driver.close();
+      /* eslint-enable no-await-in-loop */
     }
   }
   await switchToTab(tabs[0]);
   log.info(`Clearing cache and cookies. Current URL is ${await driver.getCurrentUrl()}.`);
   await driver.manage().deleteAllCookies();
-  return await driver.executeScript('window.sessionStorage.clear();window.localStorage.clear();');
+  return driver.executeScript('window.sessionStorage.clear();window.localStorage.clear();');
 };
 
 const activateTab = async (tabName) => {
   const startTimer = Date.now();
   while (Date.now() - startTimer < config.timeout) {
+    /* eslint-disable no-await-in-loop */
     const tabs = await driver.getAllWindowHandles();
-    for (let index = 0; index < tabs.length; index++) {
+    for (let index = 0; index < tabs.length; index += 1) {
       await switchToTab(tabs[index]);
       const currentTabName = await getTitle();
       if (currentTabName.includes(tabName)) {
@@ -140,6 +146,7 @@ const activateTab = async (tabName) => {
       }
     }
     await sleep(5000);
+    /* eslint-enable no-await-in-loop */
   }
   return false;
 };
@@ -147,12 +154,14 @@ const activateTab = async (tabName) => {
 const closeTabAndSwitch = async (tabName) => {
   const startTimer = Date.now();
   while (Date.now() - startTimer < config.timeout) {
+    /* eslint-disable no-await-in-loop */
     const tabs = await driver.getAllWindowHandles();
     if (tabs.length < 2) {
-      log.error(`There is only 1 tab existing. Script will not closing the ${tabName} tab to avoid issues. Please check your test.`);
+      log.error(`There is only 1 tab existing. Script will not closing the ${tabName} 
+      tab to avoid issues. Please check your test.`);
       return false;
     }
-    for (let index = 0; index < tabs.length; index++) {
+    for (let index = 0; index < tabs.length; index += 1) {
       await switchToTab(tabs[index]);
       const currentTabName = await getTitle();
       if (currentTabName.includes(tabName)) {
@@ -164,46 +173,9 @@ const closeTabAndSwitch = async (tabName) => {
       }
     }
     await sleep(5000);
+    /* eslint-enable no-await-in-loop */
   }
   return false;
-};
-
-const switchToTab = async (tab) => {
-  let switched;
-  try {
-    switched = await driver.switchTo().window(tab);
-  } catch (err) {
-    log.error(err.stack);
-  }
-  return switched;
-};
-
-const closeCurrentTab = async () => {
-  let closed;
-  try {
-    closed = await driver.close();
-  } catch (err) {
-    log.error(err.stack);
-  }
-  return closed;
-};
-
-const getTitle = async () => {
-  let title;
-  try {
-    title = await driver.getTitle();
-  } catch (err) {
-    log.error(err.stack);
-  }
-  return title;
-};
-
-const getURL = async () => {
-  try {
-    return await driver.getCurrentUrl();
-  } catch (err) {
-    log.error(err.stack);
-  }
 };
 
 const takeScreenshot = async () => {

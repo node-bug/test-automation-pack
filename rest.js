@@ -1,11 +1,7 @@
 const jsonfile = require('jsonfile');
-const _ = require('lodash');
 const rp = require('request-promise-native');
 const jsonwebtoken = require('jsonwebtoken');
 const { log } = require('./logger');
-const config = require('./config');
-// const uris = require('../../config/endpoints.json');
-
 const cookieMap = new Map();
 
 function RestObject(fullFileName) {
@@ -14,12 +10,11 @@ function RestObject(fullFileName) {
   this.cookie = null;
   this.response = null;
   this.error = null;
-
   log.debug(`Reading rest specs from file ${fullFileName}`);
 }
 
-RestObject.prototype.send = async function () {
-  log.debug(`Sending request :\n${JSON.stringify(this.request)}`);
+RestObject.prototype.send = async () => {
+  log.debug(`Sending request :\n${JSON.stringify(this.request)}\n\n`);
   try {
     const fullresponse = await rp(this.request);
     this.response = fullresponse.body;
@@ -32,22 +27,21 @@ RestObject.prototype.send = async function () {
   }
 };
 
-RestObject.prototype.setRequestBody = async function (body) {
-  log.info(`Adding body ${JSON.stringify(body)} to request`);
+RestObject.prototype.setRequestBody = async (body) => {
+  log.info(`Adding body ${JSON.stringify(body)} to request\n\n`);
   Object.assign(this.request.body, body);
 };
 
-RestObject.prototype.setRequestOptions = async function (requestType, app) {
-  const uri = await _.get(uris, [app, config.stack]);
+RestObject.prototype.setRequestOptions = async (requestType, url) => {
   log.info(`Constructing request options for request type ${requestType}`);
   this.request.method = requestType;
-  this.request.uri = `${uri}${this.spec.endpoint}`;
+  this.request.uri = `${url}${this.spec.endpoint}`;
   this.request.body = this.spec.request;
   this.request.json = this.spec.json;
   this.request.resolveWithFullResponse = true;
 };
 
-RestObject.prototype.setRequestCookie = async function () {
+RestObject.prototype.setRequestCookie = async () => {
   if (this.cookie !== null) {
     const cookieJar = rp.jar();
     cookieJar.setCookie(this.cookie, `https://${this.cookie.domain}`);
@@ -55,12 +49,12 @@ RestObject.prototype.setRequestCookie = async function () {
   }
 };
 
-RestObject.prototype.setCookie = async function (payload) {
+RestObject.prototype.setCookie = async (payload) => {
   if (cookieMap.has(payload)) {
-    log.debug(`Cookie exists payload ${JSON.stringify(payload)}. Using existing.`);
+    log.debug(`Cookie exists for payload ${JSON.stringify(payload)}. \nUsing existing.\n\n`);
     this.cookie = cookieMap.get(payload);
   } else {
-    log.debug(`Cookie does not exist for payload ${JSON.stringify(payload)}. Creating new cookie.`);
+    log.debug(`Cookie does not exist for payload ${JSON.stringify(payload)}. \nCreating new cookie.\n\n`);
     const tough = require('tough-cookie');
     this.cookie = new tough.Cookie({
       key: 'id_token',
@@ -72,49 +66,52 @@ RestObject.prototype.setCookie = async function (payload) {
     cookieMap.set(payload, this.cookie);
   }
 };
-RestObject.prototype.DELETE = async function (app, body) {
-  await this.setRequestOptions('DELETE', app);
+
+RestObject.prototype.DELETE = async (url, body) => {
+  await this.setRequestOptions('DELETE', url);
   await this.setRequestBody(body);
   await this.setRequestCookie();
   const result = await this.send();
 
   if (result) {
+    log.debug(`Respone\n${response}\n\n`);
     return this.response.status;
   }
+  log.error(`Error response\n${error}\n\n`);
   return this.error.statusCode;
 };
 
-RestObject.prototype.PUT = async function (app, body) {
-  await this.setRequestOptions('PUT', app);
+RestObject.prototype.PUT = async (url, body) => {
+  await this.setRequestOptions('PUT', url);
   await this.setRequestBody(body);
   await this.setRequestCookie();
   const result = await this.send();
 
   if (result) {
+    log.debug(`Respone\n${response}\n\n`);
     return this.response.status;
   }
+  log.error(`Error response\n${error}\n\n`);
   return this.error.statusCode;
 };
 
-RestObject.prototype.POST = async function (app, body) {
-  await this.setRequestOptions('POST', app);
+RestObject.prototype.POST = async (url, body) => {
+  await this.setRequestOptions('POST', url);
   await this.setRequestBody(body);
   await this.setRequestCookie();
   const result = await this.send();
 
   if (result) {
+    log.debug(`Respone\n${response}\n\n`);
     return this.response.status;
   }
+  log.error(`Error response\n${error}\n\n`);
   return this.error.statusCode;
 };
 
-RestObject.prototype.response = async function () {
-  return this.response.body;
-};
+RestObject.prototype.response = async () => this.response.body;
 
-RestObject.prototype.error = async function () {
-  return this.error;
-};
+RestObject.prototype.error = async () => this.error;
 
 module.exports = {
   RestObject,

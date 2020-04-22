@@ -1,12 +1,11 @@
 /**
  * http://usejsdoc.org/
  */
-const { getDriver, getWebDriver, onWaitForWebElementToBeDisabled } = require('./driver');
+const { getDriver, getWebDriver } = require('./driver');
 const { log } = require('./logger');
-
 const that = {};
 
-const WebElement = function (element) {
+function WebElement(element) {
   const my = {};
 
   my.driver = getDriver();
@@ -17,50 +16,52 @@ const WebElement = function (element) {
   my.specialInstr = null;
   my.by = my.webdriver.By;
 
-  that.getWebElement = async function () {
-    const definition = await this.getBy();
-    return await my.driver.findElement(definition);
+  that.getWebElement = async () => {
+    const definition = await that.getBy();
+    return my.driver.findElement(definition);
   };
 
-  that.getWebElements = async function () {
-    const definition = await this.getBy();
-    return await my.driver.findElements(definition);
+  that.getWebElements = async () => {
+    const definition = await that.getBy();
+    return my.driver.findElements(definition);
   };
 
-  that.elementDisplayed = async function () {
-    const definition = await this.getBy();
+  that.elementDisplayed = async () => {
+    const definition = await that.getBy();
     try {
-      return await my.driver.findElement(definition).isDisplayed();
+      return my.driver.findElement(definition).isDisplayed();
     } catch (err) {
       return false;
     }
   };
 
-  that.focus = async function () {
-    const definition = await this.getBy();
+  that.focus = async () => {
+    const definition = await that.getBy();
     const returnElement = await my.driver.findElement(definition);
-    return await getDriver().executeScript('arguments[0].focus();', returnElement);
+    return getDriver().executeScript('arguments[0].focus();', returnElement);
   };
 
-  that.scrollIntoView = async function () {
-    const definition = await this.getBy();
+  that.scrollIntoView = async () => {
+    const definition = await that.getBy();
     const returnElement = await my.driver.findElement(definition);
-    return await getDriver().executeScript('arguments[0].scrollIntoView(); window.scrollBy(0, -window.innerHeight / 4);', returnElement);
+    // eslint-disable-next-line max-len
+    return getDriver().executeScript('arguments[0].scrollIntoView(); window.scrollBy(0, -window.innerHeight / 4);', returnElement);
   };
 
-  that.elementDisabled = async function () {
-    const definition = await this.getBy();
+  that.elementDisabled = async () => {
+    const definition = await that.getBy();
     const returnElement = await my.driver.findElement(definition);
-    return await my.driver.wait(my.webdriver.until.elementIsDisabled(returnElement), 3000);
+    return my.driver.wait(my.webdriver.until.elementIsDisabled(returnElement), 3000);
   };
 
-  that.waitForVisibility = async function (timeoutInSeconds) {
-    const definition = await this.getBy();
+  that.waitForVisibility = async (timeoutInSeconds) => {
+    const definition = await that.getBy();
     const { implicit } = await my.driver.manage().getTimeouts();
     await my.driver.manage().setTimeouts({ implicit: 5000 });
-    let visibility = false; const
-      timer = Date.now();
+    let visibility = false;
+    const timer = Date.now();
     while ((Date.now() - timer) / 1000 < timeoutInSeconds) {
+      // eslint-disable-next-line no-await-in-loop
       const elements = await my.driver.findElements(definition);
       if (elements.length > 0) {
         visibility = true; break;
@@ -70,13 +71,14 @@ const WebElement = function (element) {
     return visibility;
   };
 
-  that.waitForInvisibility = async function (timeoutInSeconds) {
-    const definition = await this.getBy();
+  that.waitForInvisibility = async (timeoutInSeconds) => {
+    const definition = await that.getBy();
     const { implicit } = await my.driver.manage().getTimeouts();
     await my.driver.manage().setTimeouts({ implicit: 5000 });
-    let invisibility = false; const
-      timer = Date.now();
+    let invisibility = false;
+    const timer = Date.now();
     while ((Date.now() - timer) / 1000 < timeoutInSeconds) {
+      // eslint-disable-next-line no-await-in-loop
       const elements = await my.driver.findElements(definition);
       if (elements.length < 1) {
         invisibility = true; break;
@@ -86,7 +88,7 @@ const WebElement = function (element) {
     return invisibility;
   };
 
-  that.getBy = async function () {
+  that.getBy = async () => {
     let byReturn = null;
     const classType = my.byType.toLowerCase().trim();
     log.debug(`Getting element ${element.name} By: ${classType} for ${my.definition}`);
@@ -116,12 +118,13 @@ const WebElement = function (element) {
         byReturn = my.by.tagName(my.definition);
         break;
       default:
+        // eslint-disable-next-line max-len
         log.error(`The data asked to identify the element ${my.name}  by the type ${my.byType} and that type is not valid.  Please review the data and try again.`);
         log.error('Valid types are [xpath, cssSelector, id, name, linkText, partialLinkText, className, tagName]');
     }
     return byReturn;
   };
   return that;
-};
+}
 
 module.exports = WebElement;
