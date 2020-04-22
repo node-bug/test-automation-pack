@@ -2,6 +2,7 @@ const jsonfile = require('jsonfile');
 const rp = require('request-promise-native');
 const jsonwebtoken = require('jsonwebtoken');
 const { log } = require('./logger');
+const tough = require('tough-cookie');
 
 const cookieMap = new Map();
 
@@ -56,7 +57,6 @@ RestObject.prototype.setCookie = async function (payload) {
     this.cookie = cookieMap.get(payload);
   } else {
     log.debug(`\nCookie does not exist for payload ${JSON.stringify(payload)}\nCreating new cookie.\n\n`);
-    const tough = require('tough-cookie');
     this.cookie = new tough.Cookie({
       key: 'id_token',
       value: jsonwebtoken.sign(payload, 'secret', {
