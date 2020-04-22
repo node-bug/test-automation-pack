@@ -10,11 +10,10 @@ const imagemin = require('imagemin');
 const imageminPngquant = require('imagemin-pngquant');
 const { log } = require('./logger');
 const config = require('./config');
-
 let driver;
 
 const buildDriver = function () {
-  const driver = new webdriver.Builder();
+  const browser = new webdriver.Builder();
   log.info(`Launching ${config.browser}`);
   switch (config.browser.toLowerCase()) {
     case 'firefox':
@@ -28,9 +27,9 @@ const buildDriver = function () {
       };
       var firefoxCapabilities = webdriver.Capabilities.firefox();
       firefoxCapabilities.set('firefoxOptions', firefoxOptions);
-      driver.withCapabilities(firefoxCapabilities);
+      browser.withCapabilities(firefoxCapabilities);
       if (config.headless === true) {
-        driver.setFirefoxOptions(new firefox.Options().headless());
+        browser.setFirefoxOptions(new firefox.Options().headless());
       }
       break;
     case 'safari':
@@ -44,7 +43,7 @@ const buildDriver = function () {
       };
       var safariCapabilities = webdriver.Capabilities.safari();
       safariCapabilities.set('safariOptions', safariOptions);
-      driver.withCapabilities(safariCapabilities);
+      browser.withCapabilities(safariCapabilities);
       break;
     case 'ie':
       log.info('IE not implement yet.');
@@ -63,16 +62,16 @@ const buildDriver = function () {
       };
       var chromeCapabilities = webdriver.Capabilities.chrome();
       chromeCapabilities.set('goog:chromeOptions', chromeOptions);
-      driver.withCapabilities(chromeCapabilities);
+      browser.withCapabilities(chromeCapabilities);
       if (config.headless === true) {
-        driver.setChromeOptions(new chrome.Options().headless());
+        browser.setChromeOptions(new chrome.Options().headless());
       }
   }
 
   if (config.hub !== undefined) {
-    driver.usingServer(config.hub);
+    browser.usingServer(config.hub);
   }
-  return driver.build();
+  return browser.build();
 };
 
 driver = buildDriver();
