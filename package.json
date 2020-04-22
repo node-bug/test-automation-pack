@@ -15,7 +15,6 @@
     "imagemin-pngquant": "latest",
     "jsonfile": "latest",
     "jsonwebtoken": "latest",
-    "lodash": "latest",
     "minimist": "latest",
     "request-promise-native": "latest",
     "selenium-webdriver": "latest",
