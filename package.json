@@ -10,6 +10,7 @@
     "winston": "latest",
     "selenium-webdriver": "latest",
     "chromedriver": "latest",
+    "geckodriver": "latest",
     "minimist": "latest",
     "fs": "latest",
     "jsonfile": "latest",
