@@ -2,7 +2,7 @@
 const { By, Key } = require('selenium-webdriver');
 const { assert } = require('chai');
 const {
-  getDriver, onWaitForElementToBeVisible, onPageLoadedWaitById, onWaitForWebElementToBeEnabled,
+  onWaitForElementToBeVisible, onPageLoadedWaitById, onWaitForWebElementToBeEnabled,
   onWaitForElementToBeInvisible, sleep,
 } = require('./driver');
 const WebElement = require('./WebElement');
@@ -13,7 +13,7 @@ async function populateCheckbox(selector, value, WebElementObject) {
     assert.fail('Instruction for populate checkbox must be \'check\' or \'uncheck\'. Please validate your test step.');
   }
 
-  const actions = getDriver().actions({ bridge: true });
+  const actions = selector.getDriver().actions({ bridge: true });
   let localSpecialInstr = '';
   const WebElementData = WebElementObject.element;
   const isChecked = await selector.isSelected();
@@ -82,7 +82,7 @@ async function populateSelect(selector, item, WebElementObject) {
 }
 
 async function populateTextField(selector, value, WebElementObject) {
-  const actions = getDriver().actions({ bridge: true });
+  const actions = selector.getDriver().actions({ bridge: true });
 
   let localSpecialInstr = '';
   const WebElementData = WebElementObject.element;
@@ -139,19 +139,21 @@ async function populateTextField(selector, value, WebElementObject) {
 
 async function populateClick(selector, value, WebElementObject) {
   const WebElementData = WebElementObject.element;
-  let localSpecialInstr = '';
+  let localSpecialInstr = "";
   if (WebElementData && WebElementData.specialInstr != null) {
     localSpecialInstr = WebElementData.specialInstr;
   }
 
-  if (localSpecialInstr.toLowerCase().includes('focus')) {
-    log.debug(`Special Instruction is : ${localSpecialInstr}. Focussing on element.`);
+  if (localSpecialInstr.toLowerCase().includes("focus")) {
+    log.debug(
+      `Special Instruction is : ${localSpecialInstr}. Focussing on element.`
+    );
     await WebElementObject.webElement.focus();
   }
 
-  if (value.toLowerCase() === 'click') {
+  if (value.toLowerCase() === "click") {
     if (WebElementData && WebElementData.waitForElementToBeEnabled) {
-      log.debug('Waiting until element to be enabled');
+      log.debug("Waiting until element to be enabled");
       const webElementTarget = await WebElement(WebElementData);
       const webElement = await webElementTarget.getWebElement();
       await onWaitForWebElementToBeEnabled(webElement);
@@ -161,11 +163,25 @@ async function populateClick(selector, value, WebElementObject) {
     try {
       await selector.click();
     } catch (ex) {
-      if (ex.name === 'ElementNotInteractableError') {
+      if (ex.name === "ElementNotInteractableError") {
         log.info(`Error name ${ex.name}.`);
-        log.info('Trying again using mouse actions to perform click.');
-        const actions = getDriver().actions({ bridge: true });
-        await actions.click(selector).perform();
+        log.info("Trying again using mouse actions to perform click.");
+        const actions = selector.getDriver().actions({ bridge: true });
+        try {
+          await actions.click(selector).perform();
+        } catch (ex) {
+          log.info(`Error name ${ex.name} while clicking using actions.`);
+        }
+      } else if (ex.name === "ElementClickInterceptedError") {
+        log.info(`Error name ${ex.name}.`);
+        log.info("Trying again using page script actions to perform click.");
+        try {
+          await selector
+            .getDriver()
+            .executeScript("arguments[0].click();", selector);
+        } catch (ex) {
+          log.info(`Error name ${ex.name} while clicking using executeScript.`);
+        }
       } else {
         assert.fail(`Exception occurred and caught. ${ex}`);
       }
@@ -173,37 +189,52 @@ async function populateClick(selector, value, WebElementObject) {
     await sleep(500);
 
     if (WebElementData && WebElementData.waitIdToBeVisibleonNextPage) {
-      log.debug('Waiting until page loads after click');
+      log.debug("Waiting until page loads after click");
       await onPageLoadedWaitById(WebElementData.waitIdToBeVisibleonNextPage);
-      await sleep(500);
+      // await sleep(500);
     }
 
     if (WebElementData && WebElementData.waitToBeVisible) {
-      log.debug(`Waiting until WebElementData (${WebElementData}) to be visible`);
-      const webElementTarget = await WebElement(WebElementObject.waitToBeVisible);
+      log.debug(
+        `Waiting until WebElementData (${WebElementData}) to be visible`
+      );
+      const webElementTarget = await WebElement(
+        WebElementObject.waitToBeVisible
+      );
       const webElement = await webElementTarget.getBy();
       await onWaitForElementToBeVisible(webElement);
-      await sleep(500);
+      // await sleep(500);
     }
 
-    log.debug('Clicked web element');
+    log.debug("Clicked web element");
   }
 
   if (WebElementObject && WebElementObject.elementToWaitToBeInvisible) {
-    log.debug(`Waiting until WebElementObject (${WebElementObject}) to be invisible`);
-    const webElementTarget = await WebElement(WebElementObject.elementToWaitToBeInvisible);
+    log.debug(
+      `Waiting until WebElementObject (${WebElementObject}) to be invisible`
+    );
+    const webElementTarget = await WebElement(
+      WebElementObject.elementToWaitToBeInvisible
+    );
     const webElement = await webElementTarget.getBy();
     await onWaitForElementToBeInvisible(webElement);
-    log.debug('Sleeping 1000ms');
-    await sleep(500);
+    log.debug("Sleeping 1000ms");
+    // await sleep(500);
   }
 
-  if (localSpecialInstr && localSpecialInstr.toLowerCase().indexOf('waitAfter2secs') > -1) {
+  if (
+    localSpecialInstr &&
+    localSpecialInstr.toLowerCase().indexOf("waitAfter2secs") > -1
+  ) {
     try {
       // eslint-disable-next-line max-len
-      log.debug(`Sleeping 2 seconds: Click - waitAfter2secs ${localSpecialInstr.toLowerCase().indexOf('waitAfter2secs')}`);
+      log.debug(
+        `Sleeping 2 seconds: Click - waitAfter2secs ${localSpecialInstr
+          .toLowerCase()
+          .indexOf("waitAfter2secs")}`
+      );
       await sleep(2000);
-      log.debug('Waking up.');
+      log.debug("Waking up.");
     } catch (e) {
       log.error(e);
     }
@@ -226,7 +257,7 @@ async function populateFile(selector, value, WebElementObject) {
     // eslint-disable-next-line max-len
     log.debug(`Special Instruction is : ${localSpecialInstr}. Running javascript on page.`);
     // eslint-disable-next-line max-len
-    await getDriver().executeScript("arguments[0].style.height='auto'; arguments[0].style.visibility='visible';", selector);
+    await selector.getDriver().executeScript("arguments[0].style.height='auto'; arguments[0].style.visibility='visible';", selector);
   }
 
   if (!localSpecialInstr.toLowerCase().includes('noclick')) {
@@ -267,7 +298,7 @@ async function populateFile(selector, value, WebElementObject) {
 }
 
 async function populateRichTextField(selector, value, WebElementObject) {
-  const actions = getDriver().actions({ bridge: true });
+  const actions = selector.getDriver().actions({ bridge: true });
 
   let localSpecialInstr = '';
   const WebElementData = WebElementObject.element;

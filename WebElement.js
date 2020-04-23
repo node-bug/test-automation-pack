@@ -39,14 +39,14 @@ function WebElement(element) {
   that.focus = async () => {
     const definition = await that.getBy();
     const returnElement = await my.driver.findElement(definition);
-    return getDriver().executeScript('arguments[0].focus();', returnElement);
+    return my.driver.executeScript('arguments[0].focus();', returnElement);
   };
 
   that.scrollIntoView = async () => {
     const definition = await that.getBy();
     const returnElement = await my.driver.findElement(definition);
     // eslint-disable-next-line max-len
-    return getDriver().executeScript('arguments[0].scrollIntoView(); window.scrollBy(0, -window.innerHeight / 4);', returnElement);
+    return my.driver.executeScript('arguments[0].scrollIntoView(); window.scrollBy(0, -window.innerHeight / 4);', returnElement);
   };
 
   that.elementDisabled = async () => {
@@ -91,9 +91,9 @@ function WebElement(element) {
 
   that.getBy = async () => {
     let byReturn = null;
-    const classType = my.byType.toLowerCase().trim();
-    log.debug(`Getting element ${element.name} By: ${classType} for ${my.definition}`);
-    switch (classType) {
+    const type = my.byType.toLowerCase().trim();
+    log.debug(`Getting element ${element.name} By: ${type} for ${my.definition}`);
+    switch (type) {
       case 'xpath':
         byReturn = my.by.xpath(my.definition);
         break;

@@ -64,21 +64,23 @@ function PageObject(pageNameInput, pageNameDirectoryInput) {
 
       const { implicit } = await getDriver().manage().getTimeouts();
       switch (value.toLowerCase()) {
+        case 'notvisible':
         case 'notdisplayed':
           await getDriver().manage().setTimeouts({
             implicit: 5000,
           });
-          retval = !(await WebElementObject.elementDisplayed());
+          retval = !await WebElementObject.elementDisplayed();
           await getDriver().manage().setTimeouts({
             implicit,
           });
-          return retval;
+          break;
         case 'visible':
         case 'displayed':
-          return WebElementObject.elementDisplayed();
-        case 'notvisible':
+          retval = WebElementObject.elementDisplayed();
+          break;
         case 'disabled':
-          return WebElementObject.elementDisabled();
+          retval = WebElementObject.elementDisabled();
+          break;
         case 'exists':
           await getDriver().manage().setTimeouts({
             implicit: 3000,
@@ -88,7 +90,8 @@ function PageObject(pageNameInput, pageNameDirectoryInput) {
             implicit,
           });
           log.info(`Found ${retval.length} matching elements on page.`);
-          return retval.length > 0;
+          retval = retval.length > 0;
+          break;
         default:
       }
     } else {
@@ -292,7 +295,7 @@ function PageObject(pageNameInput, pageNameDirectoryInput) {
   const assertElementDoesNotExist = async (elementName, replaceText) => {
     const element = await addDynamicElement(elementName, replaceText);
 
-    if (await genericAssertElement(element, 'notdisplayed')) {
+    if (!await genericAssertElement(element, 'exists')) {
       log.info(`Web Element ${element} is not displayed on page. PASS`);
     } else {
       assert.fail(`Web Element ${element} is displayed on page.`);

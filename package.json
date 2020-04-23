@@ -17,8 +17,8 @@
     "request-promise-native": "latest",
     "selenium-webdriver": "latest",
     "winston": "latest",
-    "tough-cookie":"latest",
-    "geckodriver":"latest"
+    "tough-cookie": "latest",
+    "geckodriver": "latest"
   },
   "description": "framework for test automation using selenium with gherkin support",
   "devDependencies": {
@@ -62,5 +62,5 @@
   "scripts": {
     "test": "npm run test"
   },
-  "version": "0.0.4"
+  "version": "0.0.6"
 }
