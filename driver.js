@@ -61,7 +61,7 @@ function buildDriver() {
     default:
       chrome.setDefaultService(new chrome.ServiceBuilder(chromedriver.path).build());
       chromeOptions = {
-        args: ['start-maximized', 'disable-extensions'],
+        args: ['start-maximized', 'disable-extensions','incognito'],
         prefs: {
           'profile.content_settings.exceptions.automatic_downloads.*.setting': 1,
           'download.prompt_for_download': false,
