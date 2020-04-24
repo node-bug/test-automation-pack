@@ -1,8 +1,8 @@
 const jsonfile = require('jsonfile');
 const rp = require('request-promise-native');
 const jsonwebtoken = require('jsonwebtoken');
-const { log } = require('./logger');
 const tough = require('tough-cookie');
+const { log } = require('./logger');
 
 const cookieMap = new Map();
 
@@ -44,10 +44,8 @@ RestObject.prototype.setRequestOptions = async function (requestType, url) {
 };
 
 RestObject.prototype.setRequestCookie = async function () {
-  if (this.cookie !== null) {
-    const cookieJar = rp.jar();
-    cookieJar.setCookie(this.cookie, `https://${this.cookie.domain}`);
-    this.request.jar = cookieJar;
+  if (this.cookie !== null && this.cookie !== undefined) {
+    this.request.jar = rp.jar().setCookie(this.cookie.toString(), `https://${this.cookie.domain}`);
   }
 };
 

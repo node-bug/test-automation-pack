@@ -6,6 +6,7 @@ const remote = require('selenium-webdriver/remote');
 const chrome = require('selenium-webdriver/chrome');
 const firefox = require('selenium-webdriver/firefox');
 const chromedriver = require('chromedriver');
+const firefoxdriver = require('geckodriver');
 const imagemin = require('imagemin');
 const imageminPngquant = require('imagemin-pngquant');
 const { log } = require('./logger');
@@ -27,7 +28,7 @@ function buildDriver() {
   switch (config.browser.toLowerCase()) {
     case 'firefox':
       firefoxOptions = {
-        args: ['start-maximized', 'disable-infobars'],
+        args: ['start-maximized', 'disable-infobars', 'private'],
         prefs: {
           'profile.content_settings.exceptions.automatic_downloads.*.setting': 1,
           'download.prompt_for_download': false,
@@ -61,7 +62,7 @@ function buildDriver() {
     default:
       chrome.setDefaultService(new chrome.ServiceBuilder(chromedriver.path).build());
       chromeOptions = {
-        args: ['start-maximized', 'disable-extensions','incognito'],
+        args: ['start-maximized', 'disable-extensions', 'incognito'],
         prefs: {
           'profile.content_settings.exceptions.automatic_downloads.*.setting': 1,
           'download.prompt_for_download': false,

@@ -1,12 +1,8 @@
-
 const { By, Key } = require('selenium-webdriver');
 const { assert } = require('chai');
-const {
-  onWaitForElementToBeVisible, onPageLoadedWaitById, onWaitForWebElementToBeEnabled,
-  onWaitForElementToBeInvisible, sleep,
-} = require('./driver');
 const WebElement = require('./WebElement');
 const { log } = require('./logger');
+const { sleep } = require('./driver');
 
 async function populateCheckbox(selector, value, WebElementObject) {
   if (value.toLowerCase() !== 'check' && value.toLowerCase() !== 'uncheck') {
@@ -139,48 +135,48 @@ async function populateTextField(selector, value, WebElementObject) {
 
 async function populateClick(selector, value, WebElementObject) {
   const WebElementData = WebElementObject.element;
-  let localSpecialInstr = "";
+  let localSpecialInstr = '';
   if (WebElementData && WebElementData.specialInstr != null) {
     localSpecialInstr = WebElementData.specialInstr;
   }
 
-  if (localSpecialInstr.toLowerCase().includes("focus")) {
+  if (localSpecialInstr.toLowerCase().includes('focus')) {
     log.debug(
-      `Special Instruction is : ${localSpecialInstr}. Focussing on element.`
+      `Special Instruction is : ${localSpecialInstr}. Focussing on element.`,
     );
     await WebElementObject.webElement.focus();
   }
 
-  if (value.toLowerCase() === "click") {
+  if (value.toLowerCase() === 'click') {
     if (WebElementData && WebElementData.waitForElementToBeEnabled) {
-      log.debug("Waiting until element to be enabled");
+      log.debug('Waiting until element to be enabled');
       const webElementTarget = await WebElement(WebElementData);
       const webElement = await webElementTarget.getWebElement();
-      await onWaitForWebElementToBeEnabled(webElement);
+      await selector.onWaitForWebElementToBeEnabled(webElement);
       await sleep(500);
     }
 
     try {
       await selector.click();
     } catch (ex) {
-      if (ex.name === "ElementNotInteractableError") {
+      if (ex.name === 'ElementNotInteractableError') {
         log.info(`Error name ${ex.name}.`);
-        log.info("Trying again using mouse actions to perform click.");
+        log.info('Trying again using mouse actions to perform click.');
         const actions = selector.getDriver().actions({ bridge: true });
         try {
           await actions.click(selector).perform();
-        } catch (ex) {
-          log.info(`Error name ${ex.name} while clicking using actions.`);
+        } catch (e) {
+          log.info(`Error name ${e.name} while clicking using actions.`);
         }
-      } else if (ex.name === "ElementClickInterceptedError") {
+      } else if (ex.name === 'ElementClickInterceptedError') {
         log.info(`Error name ${ex.name}.`);
-        log.info("Trying again using page script actions to perform click.");
+        log.info('Trying again using page script actions to perform click.');
         try {
           await selector
             .getDriver()
-            .executeScript("arguments[0].click();", selector);
-        } catch (ex) {
-          log.info(`Error name ${ex.name} while clicking using executeScript.`);
+            .executeScript('arguments[0].click();', selector);
+        } catch (e) {
+          log.info(`Error name ${e.name} while clicking using executeScript.`);
         }
       } else {
         assert.fail(`Exception occurred and caught. ${ex}`);
@@ -189,52 +185,52 @@ async function populateClick(selector, value, WebElementObject) {
     await sleep(500);
 
     if (WebElementData && WebElementData.waitIdToBeVisibleonNextPage) {
-      log.debug("Waiting until page loads after click");
-      await onPageLoadedWaitById(WebElementData.waitIdToBeVisibleonNextPage);
+      log.debug('Waiting until page loads after click');
+      await selector.onPageLoadedWaitById(WebElementData.waitIdToBeVisibleonNextPage);
       // await sleep(500);
     }
 
     if (WebElementData && WebElementData.waitToBeVisible) {
       log.debug(
-        `Waiting until WebElementData (${WebElementData}) to be visible`
+        `Waiting until WebElementData (${WebElementData}) to be visible`,
       );
       const webElementTarget = await WebElement(
-        WebElementObject.waitToBeVisible
+        WebElementObject.waitToBeVisible,
       );
       const webElement = await webElementTarget.getBy();
-      await onWaitForElementToBeVisible(webElement);
+      await selector.onWaitForElementToBeVisible(webElement);
       // await sleep(500);
     }
 
-    log.debug("Clicked web element");
+    log.debug('Clicked web element');
   }
 
   if (WebElementObject && WebElementObject.elementToWaitToBeInvisible) {
     log.debug(
-      `Waiting until WebElementObject (${WebElementObject}) to be invisible`
+      `Waiting until WebElementObject (${WebElementObject}) to be invisible`,
     );
     const webElementTarget = await WebElement(
-      WebElementObject.elementToWaitToBeInvisible
+      WebElementObject.elementToWaitToBeInvisible,
     );
     const webElement = await webElementTarget.getBy();
-    await onWaitForElementToBeInvisible(webElement);
-    log.debug("Sleeping 1000ms");
+    await selector.onWaitForElementToBeInvisible(webElement);
+    log.debug('Sleeping 1000ms');
     // await sleep(500);
   }
 
   if (
-    localSpecialInstr &&
-    localSpecialInstr.toLowerCase().indexOf("waitAfter2secs") > -1
+    localSpecialInstr
+    && localSpecialInstr.toLowerCase().indexOf('waitAfter2secs') > -1
   ) {
     try {
       // eslint-disable-next-line max-len
       log.debug(
         `Sleeping 2 seconds: Click - waitAfter2secs ${localSpecialInstr
           .toLowerCase()
-          .indexOf("waitAfter2secs")}`
+          .indexOf('waitAfter2secs')}`,
       );
       await sleep(2000);
-      log.debug("Waking up.");
+      log.debug('Waking up.');
     } catch (e) {
       log.error(e);
     }

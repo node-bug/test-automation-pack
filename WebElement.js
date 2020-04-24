@@ -29,7 +29,7 @@ function WebElement(element) {
 
   that.elementDisplayed = async () => {
     const definition = await that.getBy();
-    return await my.driver.findElement(definition).isDisplayed();
+    return my.driver.findElement(definition).isDisplayed();
   };
 
   that.focus = async () => {

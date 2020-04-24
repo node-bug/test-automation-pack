@@ -18,5 +18,5 @@ const grid = (argv.grid || rc.selenium.grid || 'local');
 const datetime = new Date().toISOString();
 
 module.exports = {
-  browser, headless, timeout, hub, grid, datetime
+  browser, headless, timeout, hub, grid, datetime,
 };
