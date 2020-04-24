@@ -83,7 +83,7 @@ function PageObject(pageNameInput, pageNameDirectoryInput) {
           break;
         case 'exists':
           await getDriver().manage().setTimeouts({
-            implicit: 3000,
+            implicit: 5000,
           });
           retval = await WebElementObject.getWebElements();
           await getDriver().manage().setTimeouts({
@@ -285,7 +285,7 @@ function PageObject(pageNameInput, pageNameDirectoryInput) {
   const assertElementExists = async (elementName, replaceText) => {
     const element = await addDynamicElement(elementName, replaceText);
 
-    if (await genericAssertElement(element, 'displayed')) {
+    if (await genericAssertElement(element, 'exists')) {
       log.info(`Web Element ${element} is displayed on page. PASS`);
     } else {
       assert.fail(`Web Element ${element} is not displayed on page.`);
@@ -295,10 +295,10 @@ function PageObject(pageNameInput, pageNameDirectoryInput) {
   const assertElementDoesNotExist = async (elementName, replaceText) => {
     const element = await addDynamicElement(elementName, replaceText);
 
-    if (await genericAssertElement(element, 'notdisplayed')) {
-      log.info(`Web Element ${element} is not displayed on page. PASS`);
-    } else {
+    if (await genericAssertElement(element, 'exists')) {
       assert.fail(`Web Element ${element} is displayed on page.`);
+    } else {
+      log.info(`Web Element ${element} is not displayed on page. PASS`);
     }
   };
 
