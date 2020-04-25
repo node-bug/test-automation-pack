@@ -62,5 +62,5 @@
   "scripts": {
     "test": "npm run test"
   },
-  "version": "0.0.16"
+  "version": "0.0.17"
 }
