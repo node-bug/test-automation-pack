@@ -5,112 +5,100 @@ const tough = require('tough-cookie');
 const { log } = require('./logger');
 
 const cookieMap = new Map();
+const that = {};
 
 function RestObject(fullFileName) {
-  this.spec = { ...jsonfile.readFileSync(fullFileName) };
-  this.request = {};
-  this.cookie = null;
-  this.response = null;
-  this.error = null;
-  log.debug(`Reading rest specs from file ${fullFileName}`);
-}
+  const me = {};
+  me.spec = { ...jsonfile.readFileSync(fullFileName) };
+  me.resource = null;
+  me.request = {};
+  me.cookie = null;
+  me.response = null;
 
-RestObject.prototype.send = async function () {
-  log.debug(`Sending request :\n${JSON.stringify(this.request)}\n\n`);
-  try {
-    const fullresponse = await rp(this.request);
-    this.response = fullresponse.body;
-    log.info(`Request returned response. Status code ${this.response.statusCode || this.response.status}`);
-    return true;
-  } catch (err) {
-    this.error = err;
-    log.info(`Request failed. Status code ${this.error.statusCode}`);
-    return false;
-  }
-};
+  me.setRequestOptions = async (requestType, url, jwt, body) => {
+    log.info(`Constructing request options for request type ${requestType}`);
+    me.request.method = requestType;
+    me.request.uri = `${url}${(me.resource || me.spec.endpoint)}`;
+    me.request.jar = await me.cookieJar(jwt);
+    me.request.json = me.spec.json;
+    me.request.body = { ...body };
+    me.request.resolveWithFullResponse = true;
+  };
 
-RestObject.prototype.setRequestBody = async function (body) {
-  log.info(`Adding body ${JSON.stringify(body)} to request\n\n`);
-  Object.assign(this.request.body, body);
-};
+  me.cookieJar = async (payload) => {
+    const cookie = await me.getCookie(payload);
+    if (cookie !== null && cookie !== undefined) {
+      const cookieJar = rp.jar();
+      cookieJar.setCookie(cookie.toString(), `https://${cookie.domain}`);
+      return cookieJar;
+    }
+    log.error('Cookie is null or undefined. Please validate payload.');
+    return null;
+  };
 
-RestObject.prototype.setRequestOptions = async function (requestType, url) {
-  log.info(`Constructing request options for request type ${requestType}`);
-  this.request.method = requestType;
-  this.request.uri = `${url}${this.spec.endpoint}`;
-  this.request.body = this.spec.request;
-  this.request.json = this.spec.json;
-  this.request.resolveWithFullResponse = true;
-};
-
-RestObject.prototype.setRequestCookie = async function () {
-  if (this.cookie !== null && this.cookie !== undefined) {
-    this.request.jar = rp.jar().setCookie(this.cookie.toString(), `https://${this.cookie.domain}`);
-  }
-};
-
-RestObject.prototype.setCookie = async function (payload) {
-  if (cookieMap.has(payload)) {
-    log.debug('\nCookie exists for payload. Using existing.\n\n');
-    this.cookie = cookieMap.get(payload);
-  } else {
-    log.debug(`\nCookie does not exist for payload ${JSON.stringify(payload)}\nCreating new cookie.\n\n`);
-    this.cookie = new tough.Cookie({
+  me.getCookie = async (payload) => {
+    if (cookieMap.has(payload)) {
+      log.debug(`Cookie exists payload ${JSON.stringify(payload)}. Using existing.`);
+      return cookieMap.get(payload);
+    }
+    log.debug(`Cookie does not exist for payload ${JSON.stringify(payload)}. Creating new cookie.`);
+    const cookie = new tough.Cookie({
       key: 'id_token',
       value: jsonwebtoken.sign(payload, 'secret', {
         expiresIn: '1d',
       }),
-      domain: 'mldev.cloud',
+      domain: 'mldev.cloud', // get back here
     });
-    cookieMap.set(payload, this.cookie);
-  }
-};
+    cookieMap.set(payload, cookie);
+    return cookie;
+  };
 
-RestObject.prototype.DELETE = async function (url, body) {
-  await this.setRequestOptions('DELETE', url);
-  await this.setRequestBody(body);
-  await this.setRequestCookie();
-  const result = await this.send();
+  me.send = async () => {
+    let status = false;
+    log.debug(`Sending request :\n${JSON.stringify(me.request)}`);
 
-  if (result) {
-    log.debug(`Response\n${this.response}\n\n`);
-    return this.response.status;
-  }
-  log.error(`Error response\n${this.error}\n\n`);
-  return this.error.statusCode;
-};
+    try {
+      const fullresponse = await rp(me.request);
+      me.response = fullresponse.body;
+      log.info('Request returned response.');
+      status = true;
+    } catch (err) {
+      me.response = err;
+      log.info('Request failed.');
+    }
 
-RestObject.prototype.PUT = async function (url, body) {
-  await this.setRequestOptions('PUT', url);
-  await this.setRequestBody(body);
-  await this.setRequestCookie();
-  const result = await this.send();
+    log.info(`Status code ${(me.response.statusCode || me.response.status)}`);
+    return status;
+  };
 
-  if (result) {
-    log.debug(`Response\n${this.response}\n\n`);
-    return this.response.status;
-  }
-  log.error(`Error response\n${this.error}\n\n`);
-  return this.error.statusCode;
-};
+  that.post = async (url, payload, body) => {
+    await me.setRequestOptions('POST', url, payload, body);
+    await me.send();
+    return me.response;
+  };
 
-RestObject.prototype.POST = async function (url, body) {
-  await this.setRequestOptions('POST', url);
-  await this.setRequestBody(body);
-  await this.setRequestCookie();
-  const result = await this.send();
+  that.put = async (url, payload, body) => {
+    await me.setRequestOptions('PUT', url, payload, body);
+    await me.send();
+    return me.response;
+  };
 
-  if (result) {
-    log.debug(`Response\n${this.response}\n\n`);
-    return this.response.status;
-  }
-  log.error(`Error response\n${this.error}\n\n`);
-  return this.error.statusCode;
-};
+  that.delete = async (url, payload, body) => {
+    await me.setRequestOptions('DELETE', url, payload, body);
+    await me.send();
+    return me.response;
+  };
 
-RestObject.prototype.response = async function () { return this.response.body; };
+  that.getResource = async () => me.spec.endpoint;
 
-RestObject.prototype.error = async function () { return this.error; };
+  that.setResource = async (resource) => {
+    me.resource = resource;
+  };
+
+  that.delete = async () => me.response;
+
+  return that;
+}
 
 module.exports = {
   RestObject,
