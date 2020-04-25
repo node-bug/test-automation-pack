@@ -8,27 +8,27 @@ const cookieMap = new Map();
 const that = {};
 
 function RestObject(fullFileName) {
-  const me = {};
-  me.spec = { ...jsonfile.readFileSync(fullFileName) };
-  me.resource = null;
-  me.request = {};
-  me.cookie = null;
-  me.response = null;
+  const my = {};
+  my.spec = { ...jsonfile.readFileSync(fullFileName) };
+  my.resource = null;
+  my.request = {};
+  my.cookie = null;
+  my.response = null;
 
-  me.getDomainFromURL = async (url) => url.replace('http://', '').replace('https://', '').split('/')[0];
+  my.getDomainFromURL = async (url) => url.replace('http://', '').replace('https://', '').split('/')[0];
 
-  me.setRequestOptions = async (requestType, url, jwt, body) => {
+  my.setRequestOptions = async (requestType, url, jwt, body) => {
     log.info(`Constructing request options for request type ${requestType}`);
-    me.request.method = requestType;
-    me.request.uri = `${url}${(me.resource || me.spec.endpoint)}`;
-    me.request.jar = await me.cookieJar(jwt, await me.getDomainFromURL(url));
-    me.request.json = me.spec.json;
-    me.request.body = { ...body };
-    me.request.resolveWithFullResponse = true;
+    my.request.method = requestType;
+    my.request.uri = `${url}${(my.resource || my.spec.endpoint)}`;
+    my.request.jar = await my.cookieJar(jwt, await my.getDomainFromURL(url));
+    my.request.json = my.spec.json;
+    my.request.body = { ...body };
+    my.request.resolveWithFullResponse = true;
   };
 
-  me.cookieJar = async (payload) => {
-    const cookie = await me.getCookie(payload);
+  my.cookieJar = async (payload) => {
+    const cookie = await my.getCookie(payload);
     if (cookie !== null && cookie !== undefined) {
       const cookieJar = rp.jar();
       cookieJar.setCookie(cookie.toString(), `https://${cookie.domain}`);
@@ -38,7 +38,7 @@ function RestObject(fullFileName) {
     return null;
   };
 
-  me.getCookie = async (payload) => {
+  my.getCookie = async (payload) => {
     if (cookieMap.has(payload)) {
       log.debug(`Cookie exists payload ${JSON.stringify(payload)}. Using existing.`);
       return cookieMap.get(payload);
@@ -55,49 +55,49 @@ function RestObject(fullFileName) {
     return cookie;
   };
 
-  me.send = async () => {
+  my.send = async () => {
     let status = false;
-    log.debug(`Sending request :\n${JSON.stringify(me.request)}`);
+    log.debug(`Sending request :\n${JSON.stringify(my.request)}`);
 
     try {
-      const fullresponse = await rp(me.request);
-      me.response = fullresponse.body;
+      const fullresponse = await rp(my.request);
+      my.response = fullresponse.body;
       log.info('Request returned response.');
       status = true;
     } catch (err) {
-      me.response = err;
+      my.response = err;
       log.info('Request failed.');
     }
 
-    log.info(`Status code ${(me.response.statusCode || me.response.status)}`);
+    log.info(`Status code ${(my.response.statusCode || my.response.status)}`);
     return status;
   };
 
   that.post = async (url, payload, body) => {
-    await me.setRequestOptions('POST', url, payload, body);
-    await me.send();
-    return me.response;
+    await my.setRequestOptions('POST', url, payload, body);
+    await my.send();
+    return my.response;
   };
 
   that.put = async (url, payload, body) => {
-    await me.setRequestOptions('PUT', url, payload, body);
-    await me.send();
-    return me.response;
+    await my.setRequestOptions('PUT', url, payload, body);
+    await my.send();
+    return my.response;
   };
 
   that.delete = async (url, payload, body) => {
-    await me.setRequestOptions('DELETE', url, payload, body);
-    await me.send();
-    return me.response;
+    await my.setRequestOptions('DELETE', url, payload, body);
+    await my.send();
+    return my.response;
   };
 
-  that.getResource = async () => me.spec.endpoint;
+  that.getResource = async () => my.spec.endpoint;
 
   that.setResource = async (resource) => {
-    me.resource = resource;
+    my.resource = resource;
   };
 
-  that.delete = async () => me.response;
+  that.delete = async () => my.response;
 
   return that;
 }
