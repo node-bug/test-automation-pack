@@ -2,7 +2,7 @@ const { By, Key } = require('selenium-webdriver');
 const { assert } = require('chai');
 const WebElement = require('./WebElement');
 const { log } = require('./logger');
-const { sleep } = require('./driver');
+const { sleep } = require('./utils');
 
 async function populateCheckbox(selector, value, WebElementObject) {
   if (value.toLowerCase() !== 'check' && value.toLowerCase() !== 'uncheck') {

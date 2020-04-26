@@ -6,15 +6,13 @@ const remote = require('selenium-webdriver/remote');
 const chrome = require('selenium-webdriver/chrome');
 const firefox = require('selenium-webdriver/firefox');
 const chromedriver = require('chromedriver');
-const firefoxdriver = require('geckodriver');
+require('geckodriver');
 const imagemin = require('imagemin');
 const imageminPngquant = require('imagemin-pngquant');
 const { log } = require('./logger');
 const config = require('./config');
+const { sleep } = require('./utils');
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 function buildDriver() {
   let firefoxOptions;
@@ -270,5 +268,4 @@ module.exports = {
   onWaitForWebElementToBeDisabled,
   onWaitForElementToBeVisible,
   onWaitForElementToBeInvisible,
-  sleep,
 };
