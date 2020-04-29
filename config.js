@@ -1,7 +1,5 @@
 const argv = require('minimist')(process.argv.slice(2));
-const jsonfile = require('jsonfile');
-
-const rc = jsonfile.readFileSync('../../.test-automation-packrc.json');
+const rc = require('../../.test-automation-packrc');
 
 function getHub() {
   let hub;

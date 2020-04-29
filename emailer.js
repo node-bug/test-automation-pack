@@ -6,9 +6,8 @@ const { log } = require('./logger');
 
 const that = {};
 
-function emailer() {
+function gmailer() {
   const my = {};
-  my.config = null;
 
   my.attachments = () => {
     const attachments = [];
@@ -28,11 +27,11 @@ function emailer() {
     return attachments;
   };
 
-  my.setConfig = (env) => {
-    my.config = {
-      clientId:
+  my.config = (env) => {
+   const settings = {
+      id:
         '701768719333-0f12h7i269l7n2odh5ne80u5mdkth618.apps.googleusercontent.com',
-      clientSecret: 'ADEpn82HAOHH9_8lqzpwRIXd',
+      secret: 'ADEpn82HAOHH9_8lqzpwRIXd',
       username: 'thomas.dsilva.contractor@macmillan.com',
       refreshToken:
         '1/3ayBIUgNJWANUL1-rISK50oaD6VlrWuk4XvzG03kzt9rO_ekPBdfvgDHcXLpFiNh',
@@ -45,46 +44,53 @@ function emailer() {
       body: `Please find cucumber report from Jenkins pipeline execution for ${config.emailer.branch} branch in ${env} environment attached.`,
       attachments: my.attachments(),
     };
+    return settings;
   };
 
-  my.transporter = nodemailer.createTransport({
+  my.transporter = (id, secret) => nodemailer.createTransport({
     service: 'Gmail',
     auth: {
       type: 'OAuth2',
-      clientId: my.config.clientId,
-      clientSecret: my.config.clientSecret,
-    },
+      clientId: id,
+      clientSecret: secret,
+    }
   });
 
-  my.mailOptions = {
-    from: my.config.sender, // sender address
-    to: my.config.recepients, // list of receivers
-    subject: my.config.subject, // Subject line
-    text: my.config.body,
-    attachments: my.config.attachments,
-    auth: {
-      user: my.config.username,
-      refreshToken: my.config.refreshToken,
-      accessToken: my.config.accessToken,
-      expires: 1494388182480,
-    },
+  my.options = (settings) => {
+    const options = {
+      from: settings.sender, // sender address
+      to: settings.recepients, // list of receivers
+      subject: settings.subject, // Subject line
+      text: settings.body,
+      attachments: settings.attachments,
+      auth: {
+        user: settings.username,
+        refreshToken: settings.refreshToken,
+        accessToken: settings.accessToken,
+        expires: 1494388182480,
+      },
+    };
+    return options;
   };
 
   that.send = (env) => {
-    my.setConfig(env);
-    my.transporter.sendMail(my.mailOptions, (error, info) => {
+    const settings = my.config(env);
+    const transporter = my.transporter(settings.id, settings.secret);
+    const options = my.options(settings);
+
+    transporter.sendMail(options, (error, info) => {
       if (error) {
         return log.error(error);
       }
       log.debug(`Message sent: ${info.response}`);
       return true;
     });
-    my.transporter.close();
+    transporter.close();
   };
 
   return that;
 }
 
-module.export = {
-  emailer,
+module.exports = {
+  gmailer,
 };
