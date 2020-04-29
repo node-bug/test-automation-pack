@@ -59,6 +59,7 @@ async function populateSelect(selector, item, WebElementObject) {
   } else {
     const options = await selector.findElements(By.tagName('option'));
 
+    /* eslint-disable no-restricted-syntax */
     for await (const option of options) {
       const optionText = await option.getText();
       if (item === optionText) {
@@ -66,6 +67,7 @@ async function populateSelect(selector, item, WebElementObject) {
         break;
       }
     }
+    /* eslint-enable no-restricted-syntax */
   }
   if (localSpecialInstr.toLowerCase().includes('tabafter')) {
     log.debug('Hitting arrow down key');

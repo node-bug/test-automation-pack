@@ -1,5 +1,5 @@
-const testrailapi = require('./testrailapi');
 const jsonfile = require('jsonfile');
+const testrailapi = require('./testrailapi');
 
 const that = {};
 
@@ -7,7 +7,7 @@ function cucumberToTestRail() {
   const my = {};
   my.path = `${process.cwd()}/reports/cucumber_report.json`;
   my.readJson = async (path) => jsonfile.readFileSync((path || my.path));
-  
+
   my.parse = async (path) => {
     const content = new Map();
     const report = await my.readJson(path);
@@ -57,7 +57,7 @@ function cucumberToTestRail() {
               stepResult = 5;
               resultContent.status_id = 5;
               resultContent.comment = 'This test failed.';
-            } else if (stepResult === 'skipped'){
+            } else if (stepResult === 'skipped') {
               stepResult = 12;
             }
 
@@ -85,31 +85,31 @@ function cucumberToTestRail() {
     const tr = testrailapi.testRail();
     await tr.setConnection(user);
 
-    for(const [project, sections] of content.entries()){
+    for (const [project, sections] of content.entries()) {
       const projectId = (await tr.getProjectByName(project)).id;
       const suiteId = (await tr.addSuite(projectId, suiteName)).id;
-      for(const [section, cases] of sections.entries()){
+      for (const [section, cases] of sections.entries()) {
         const sectionId = (await tr.addSection(projectId, suiteId, section)).id;
-        for(const [scenario, data] of cases){
+        for (const [scenario, data] of cases) {
           tr.addCase(projectId, suiteId, sectionId, data.get('caseContent'));
         }
       }
     }
-  }
+  };
 
   that.uploadResults = async (user, path, suiteName, runName) => {
     const content = await my.parse(path);
     const tr = testrailapi.testRail();
     await tr.setConnection(user);
 
-    for(const [project, sections] of content.entries()){
+    for (const [project, sections] of content.entries()) {
       const projectId = (await tr.getProjectByName(project)).id;
       const suiteId = (await tr.addSuite(projectId, suiteName)).id;
       await tr.addTestRun(projectId, suiteId, runName);
       const runId = (await tr.getTestRunByName(projectId, runName)).id;
-      for(const [section, cases] of sections.entries()){
+      for (const [section, cases] of sections.entries()) {
         const sectionId = (await tr.addSection(projectId, suiteId, section)).id;
-        for(const [scenario, data] of cases){
+        for (const [scenario, data] of cases) {
           const caseTitle = (await tr.getCaseByName(projectId, suiteId, sectionId, scenario)).title;
           const testId = (await tr.getTestByName(runId, caseTitle)).id;
           tr.addResult(testId, data.get('resultContent'));
@@ -119,8 +119,8 @@ function cucumberToTestRail() {
   };
 
   return that;
-};
+}
 
 module.exports = {
-  cucumberToTestRail
-}
+  cucumberToTestRail,
+};
