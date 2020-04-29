@@ -28,7 +28,7 @@ function gmailer() {
   };
 
   my.config = (env) => {
-   const settings = {
+    const settings = {
       id:
         '701768719333-0f12h7i269l7n2odh5ne80u5mdkth618.apps.googleusercontent.com',
       secret: 'ADEpn82HAOHH9_8lqzpwRIXd',
@@ -53,7 +53,7 @@ function gmailer() {
       type: 'OAuth2',
       clientId: id,
       clientSecret: secret,
-    }
+    },
   });
 
   my.options = (settings) => {

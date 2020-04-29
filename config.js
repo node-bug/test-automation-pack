@@ -8,7 +8,7 @@ function getHub() {
     hub = `${rc.grids[grid]}/wd/hub`;
   }
   return hub;
-}
+};
 
 function getTestRailConfig() {
   const that = {};
@@ -16,15 +16,15 @@ function getTestRailConfig() {
   that.suite = rc.testrail.suite_name;
   that.user = rc.testrail.user;
   return that;
-}
+};
 
 function getEmailerConfig() {
-  const that = {};
+  let that = {};
   that.recepients = (argv.recepients || rc.emailer.recepients);
   that.subject = (argv.subject || rc.emailer.subject);
   that.branch = (argv.branch || rc.emailer.branch);
   return that;
-}
+};
 
 const browser = (argv.browser || rc.selenium.browser);
 const headless = (argv.h || argv.headless === 'true' || rc.selenium.headless);
