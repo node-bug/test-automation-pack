@@ -1,14 +1,12 @@
 /**
  * Abstraction for global logger
  */
-const { createLogger, format, transports } = require('winston');
+const { createLogger, format, transports } = require("winston");
 
-const {
-  colorize, combine, timestamp, printf,
-} = format;
+const { colorize, combine, timestamp, printf } = format;
 
 const log = createLogger({
-  level: 'debug',
+  level: "debug",
   format: combine(format.splat(), format.simple()),
   transports: [
     //
@@ -17,22 +15,22 @@ const log = createLogger({
     //
     new transports.File({
       filename: `${process.cwd()}/reports/logs/error.log`,
-      level: 'error',
+      level: "error",
       format: format.combine(
         format.timestamp({
-          format: 'YYYY-MM-DD', // Optional for choosing your own timestamp format.
+          format: "YYYY-MM-DD", // Optional for choosing your own timestamp format.
         }),
-        format.json(),
+        format.json()
       ),
     }),
     new transports.File({
       filename: `${process.cwd()}/reports/logs/combined.log`,
-      level: 'debug',
+      level: "debug",
       format: format.combine(
         format.timestamp({
-          format: 'YYYY-MM-DD', // Optional for choosing your own timestamp format.
+          format: "YYYY-MM-DD", // Optional for choosing your own timestamp format.
         }),
-        format.json(),
+        format.json()
       ),
     }),
   ],
@@ -40,16 +38,16 @@ const log = createLogger({
 
 // Define your custom format with printf.
 const myFormat = printf(
-  (info) => `${info.timestamp} ${info.level}: ${info.message}`,
+  (info) => `${info.timestamp} ${info.level}: ${info.message}`
 );
 //
 // If we're not in production then log to the `console`
 //
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
   log.add(
     new transports.Console({
       format: combine(timestamp(), colorize(), myFormat),
-    }),
+    })
   );
 }
 

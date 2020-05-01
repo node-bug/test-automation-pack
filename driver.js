@@ -1,18 +1,17 @@
 /**
  * http://usejsdoc.org/
  */
-const webdriver = require('selenium-webdriver');
-const remote = require('selenium-webdriver/remote');
-const chrome = require('selenium-webdriver/chrome');
-const firefox = require('selenium-webdriver/firefox');
-const chromedriver = require('chromedriver');
-require('geckodriver');
-const imagemin = require('imagemin');
-const imageminPngquant = require('imagemin-pngquant');
-const { log } = require('./logger');
-const config = require('./config');
-const { sleep } = require('./utils');
-
+const webdriver = require("selenium-webdriver");
+const remote = require("selenium-webdriver/remote");
+const chrome = require("selenium-webdriver/chrome");
+const firefox = require("selenium-webdriver/firefox");
+const chromedriver = require("chromedriver");
+require("geckodriver");
+const imagemin = require("imagemin");
+const imageminPngquant = require("imagemin-pngquant");
+const { log } = require("./logger");
+const config = require("./config");
+const { sleep } = require("./utils");
 
 function buildDriver() {
   let firefoxOptions;
@@ -24,52 +23,54 @@ function buildDriver() {
   const browser = new webdriver.Builder();
   log.info(`Launching ${config.browser}`);
   switch (config.browser.toLowerCase()) {
-    case 'firefox':
+    case "firefox":
       firefoxOptions = {
-        args: ['start-maximized', 'disable-infobars', 'private'],
+        args: ["start-maximized", "disable-infobars", "private"],
         prefs: {
-          'profile.content_settings.exceptions.automatic_downloads.*.setting': 1,
-          'download.prompt_for_download': false,
-          'download.default_directory': `${process.cwd()}/reports/downloads`,
+          "profile.content_settings.exceptions.automatic_downloads.*.setting": 1,
+          "download.prompt_for_download": false,
+          "download.default_directory": `${process.cwd()}/reports/downloads`,
         },
       };
       firefoxCapabilities = webdriver.Capabilities.firefox();
-      firefoxCapabilities.set('firefoxOptions', firefoxOptions);
+      firefoxCapabilities.set("firefoxOptions", firefoxOptions);
       browser.withCapabilities(firefoxCapabilities);
       if (config.headless === true) {
         browser.setFirefoxOptions(new firefox.Options().headless());
       }
       break;
-    case 'safari':
+    case "safari":
       safariOptions = {
-        args: ['--start-maximized', '--disable-infobars'],
+        args: ["--start-maximized", "--disable-infobars"],
         prefs: {
-          'profile.content_settings.exceptions.automatic_downloads.*.setting': 1,
-          'download.prompt_for_download': false,
-          'download.default_directory': `${process.cwd()}/reports/downloads`,
+          "profile.content_settings.exceptions.automatic_downloads.*.setting": 1,
+          "download.prompt_for_download": false,
+          "download.default_directory": `${process.cwd()}/reports/downloads`,
         },
       };
       safariCapabilities = webdriver.Capabilities.safari();
-      safariCapabilities.set('safariOptions', safariOptions);
+      safariCapabilities.set("safariOptions", safariOptions);
       browser.withCapabilities(safariCapabilities);
       break;
-    case 'ie':
-      log.info('IE not implement yet.');
+    case "ie":
+      log.info("IE not implement yet.");
       break;
-    case 'chrome':
+    case "chrome":
     default:
-      chrome.setDefaultService(new chrome.ServiceBuilder(chromedriver.path).build());
+      chrome.setDefaultService(
+        new chrome.ServiceBuilder(chromedriver.path).build()
+      );
       chromeOptions = {
-        args: ['start-maximized', 'disable-extensions', 'incognito'],
+        args: ["start-maximized", "disable-extensions", "incognito"],
         prefs: {
-          'profile.content_settings.exceptions.automatic_downloads.*.setting': 1,
-          'download.prompt_for_download': false,
-          'download.default_directory': `${process.cwd()}/reports/downloads`,
+          "profile.content_settings.exceptions.automatic_downloads.*.setting": 1,
+          "download.prompt_for_download": false,
+          "download.default_directory": `${process.cwd()}/reports/downloads`,
         },
-        excludeSwitches: ['enable-automation'],
+        excludeSwitches: ["enable-automation"],
       };
       chromeCapabilities = webdriver.Capabilities.chrome();
-      chromeCapabilities.set('goog:chromeOptions', chromeOptions);
+      chromeCapabilities.set("goog:chromeOptions", chromeOptions);
       browser.withCapabilities(chromeCapabilities);
       if (config.headless === true) {
         browser.setChromeOptions(new chrome.Options().headless());
@@ -102,14 +103,20 @@ const switchToTab = async (tab) => driver.switchTo().window(tab);
 const visitURL = async (url) => {
   log.info(`Loading the url ${url} in the browser.`);
   await driver.manage().window().maximize();
-  await driver.manage().setTimeouts({ implicit: config.timeout, pageLoad: config.timeout, script: config.timeout });
+  await driver.manage().setTimeouts({
+    implicit: config.timeout,
+    pageLoad: config.timeout,
+    script: config.timeout,
+  });
   await driver.setFileDetector(new remote.FileDetector());
   await driver.get(url);
   await sleep(2000);
 };
 
 const closeBrowser = async () => {
-  log.info(`Closing the browser. Current URL is ${await driver.getCurrentUrl()}.`);
+  log.info(
+    `Closing the browser. Current URL is ${await driver.getCurrentUrl()}.`
+  );
   config.capabilities = await getCapabilities();
   return driver.quit();
 };
@@ -126,9 +133,13 @@ const resetBrowser = async () => {
     }
   }
   await switchToTab(tabs[0]);
-  log.info(`Clearing cache and cookies. Current URL is ${await driver.getCurrentUrl()}.`);
+  log.info(
+    `Clearing cache and cookies. Current URL is ${await driver.getCurrentUrl()}.`
+  );
   await driver.manage().deleteAllCookies();
-  return driver.executeScript('window.sessionStorage.clear();window.localStorage.clear();');
+  return driver.executeScript(
+    "window.sessionStorage.clear();window.localStorage.clear();"
+  );
 };
 
 const activateTab = async (tabName) => {
@@ -179,13 +190,18 @@ const closeTabAndSwitch = async (tabName) => {
 
 const takeScreenshot = async () => {
   try {
-    return (await imagemin.buffer(Buffer.from(await driver.takeScreenshot(), 'base64'), {
-      plugins: [
-        imageminPngquant({
-          quality: [0.1, 0.4],
-        }),
-      ],
-    })).toString('base64');
+    return (
+      await imagemin.buffer(
+        Buffer.from(await driver.takeScreenshot(), "base64"),
+        {
+          plugins: [
+            imageminPngquant({
+              quality: [0.1, 0.4],
+            }),
+          ],
+        }
+      )
+    ).toString("base64");
   } catch (err) {
     log.error(err.stack);
     return false;
@@ -196,7 +212,10 @@ const onWaitForElementToBeVisible = async (element) => {
   log.debug(`Waiting for element (${element}) to appear...`);
   try {
     await driver.wait(webdriver.until.elementLocated(element, 10000));
-    await driver.wait(webdriver.until.elementIsVisible(driver.findElement(element)), 10000);
+    await driver.wait(
+      webdriver.until.elementIsVisible(driver.findElement(element)),
+      10000
+    );
   } catch (err) {
     log.error(err.stack);
   }
@@ -209,17 +228,20 @@ const onPageLoadedWaitById = async (elementIdOnNextPage) => {
 };
 
 const onWaitForElementToBeInvisible = async (element) => {
-  log.debug('Waiting for element to disappear...');
+  log.debug("Waiting for element to disappear...");
   try {
     await driver.wait(webdriver.until.elementLocated(element, 10000));
-    await driver.wait(webdriver.until.elementIsNotVisible(driver.findElement(element)), 15000);
+    await driver.wait(
+      webdriver.until.elementIsNotVisible(driver.findElement(element)),
+      15000
+    );
   } catch (err) {
     log.error(err.stack);
   }
 };
 
 const onWaitForWebElementToBeEnabled = async (webElement) => {
-  log.debug('Waiting for webElement to become enabled...');
+  log.debug("Waiting for webElement to become enabled...");
   try {
     await driver.wait(webdriver.until.elementIsEnabled(webElement, 10000));
   } catch (err) {
@@ -228,7 +250,7 @@ const onWaitForWebElementToBeEnabled = async (webElement) => {
 };
 
 const onWaitForWebElementToBeDisabled = async (webElement) => {
-  log.debug('Waiting for webElement to become disabled...');
+  log.debug("Waiting for webElement to become disabled...");
   try {
     await driver.wait(webdriver.until.elementIsDisabled(webElement), 3000);
   } catch (err) {
@@ -237,7 +259,7 @@ const onWaitForWebElementToBeDisabled = async (webElement) => {
 };
 
 const onWaitForElementToBeLocated = async (element) => {
-  log.debug('Waiting for element to become located...');
+  log.debug("Waiting for element to become located...");
   try {
     await driver.wait(webdriver.until.elementLocated(element, 10000));
   } catch (err) {

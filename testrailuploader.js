@@ -1,18 +1,19 @@
-const jsonfile = require('jsonfile');
-const testrailapi = require('./testrailapi');
+/* eslint-disable */
+const jsonfile = require("jsonfile");
+const testrailapi = require("./testrailapi");
 
 const that = {};
 
 function cucumberToTestRail() {
   const my = {};
   my.path = `${process.cwd()}/reports/cucumber_report.json`;
-  my.readJson = async (path) => jsonfile.readFileSync((path || my.path));
+  my.readJson = async (path) => jsonfile.readFileSync(path || my.path);
 
   my.parse = async (path) => {
     const content = new Map();
     const report = await my.readJson(path);
     await report.forEach((feature) => {
-      const [, project] = feature.uri.split('/');
+      const [, project] = feature.uri.split("/");
 
       if (!content.has(project)) {
         content.set(project, new Map());
@@ -20,7 +21,7 @@ function cucumberToTestRail() {
 
       const section = feature.name;
       if (!content.get(project).has(section)) {
-        (content.get(project)).set(section, new Map());
+        content.get(project).set(section, new Map());
       }
 
       feature.elements.forEach((scenario) => {
@@ -30,39 +31,46 @@ function cucumberToTestRail() {
         const caseContent = {
           type_id: 1,
           priority_id: 5,
-          estimate: '20m',
+          estimate: "20m",
           custom_steps_separated: [],
         };
         const resultContent = {
           status_id: 12,
-          comment: 'This test was not executed',
-          elapsed: '',
+          comment: "This test was not executed",
+          elapsed: "",
           custom_step_results: [],
         };
         caseContent.title = scenario.name;
         const steps = caseContent.custom_steps_separated;
         const logs = resultContent.custom_step_results;
         for (let i = 0; i < scenario.steps.length; i += 1) {
-          if (scenario.steps[i].keyword !== 'After' && scenario.steps[i].keyword !== 'Before') {
+          if (
+            scenario.steps[i].keyword !== "After" &&
+            scenario.steps[i].keyword !== "Before"
+          ) {
             steps[i] = {};
-            steps[i].content = scenario.steps[i].keyword + scenario.steps[i].name.replace(/"/g, '');
+            steps[i].content =
+              scenario.steps[i].keyword +
+              scenario.steps[i].name.replace(/"/g, "");
             // steps[i].expected = 'Expected Result to be updated.';
 
             let stepResult = scenario.steps[i].result.status;
-            if (stepResult === 'passed') {
+            if (stepResult === "passed") {
               stepResult = 1;
               resultContent.status_id = 1;
-              resultContent.comment = 'This test passed.';
-            } else if (stepResult === 'failed') {
+              resultContent.comment = "This test passed.";
+            } else if (stepResult === "failed") {
               stepResult = 5;
               resultContent.status_id = 5;
-              resultContent.comment = 'This test failed.';
-            } else if (stepResult === 'skipped') {
+              resultContent.comment = "This test failed.";
+            } else if (stepResult === "skipped") {
               stepResult = 12;
             }
 
             logs[i] = {};
-            logs[i].content = scenario.steps[i].keyword + scenario.steps[i].name.replace(/"/g, '');
+            logs[i].content =
+              scenario.steps[i].keyword +
+              scenario.steps[i].name.replace(/"/g, "");
             // logs[i].expected = 'Expected Result to be updated.';
             logs[i].actual = scenario.steps[i].result.status;
             logs[i].status_id = stepResult;
@@ -73,8 +81,16 @@ function cucumberToTestRail() {
             // }
           }
         }
-        content.get(project).get(section).get(scenario.name).set('caseContent', caseContent);
-        content.get(project).get(section).get(scenario.name).set('resultContent', resultContent);
+        content
+          .get(project)
+          .get(section)
+          .get(scenario.name)
+          .set("caseContent", caseContent);
+        content
+          .get(project)
+          .get(section)
+          .get(scenario.name)
+          .set("resultContent", resultContent);
       });
     });
     return content;
@@ -91,7 +107,7 @@ function cucumberToTestRail() {
       for (const [section, cases] of sections.entries()) {
         const sectionId = (await tr.addSection(projectId, suiteId, section)).id;
         for (const [scenario, data] of cases) {
-          tr.addCase(projectId, suiteId, sectionId, data.get('caseContent'));
+          tr.addCase(projectId, suiteId, sectionId, data.get("caseContent"));
         }
       }
     }
@@ -110,9 +126,11 @@ function cucumberToTestRail() {
       for (const [section, cases] of sections.entries()) {
         const sectionId = (await tr.addSection(projectId, suiteId, section)).id;
         for (const [scenario, data] of cases) {
-          const caseTitle = (await tr.getCaseByName(projectId, suiteId, sectionId, scenario)).title;
+          const caseTitle = (
+            await tr.getCaseByName(projectId, suiteId, sectionId, scenario)
+          ).title;
           const testId = (await tr.getTestByName(runId, caseTitle)).id;
-          tr.addResult(testId, data.get('resultContent'));
+          tr.addResult(testId, data.get("resultContent"));
         }
       }
     }
@@ -120,6 +138,7 @@ function cucumberToTestRail() {
 
   return that;
 }
+/* eslint-enable */
 
 module.exports = {
   cucumberToTestRail,
