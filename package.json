@@ -47,7 +47,7 @@
     "rest",
     "request-promise"
   ],
-  "license": "ISC",
+  "license": "MPL-2.0",
   "lint-staged": {
     "*.{json,sh,groovy}": [
       "prettier --write"
@@ -64,5 +64,5 @@
   "scripts": {
     "test": "npm run test"
   },
-  "version": "0.0.22"
+  "version": "0.0.23"
 }
