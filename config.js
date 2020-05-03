@@ -5,7 +5,11 @@ const rc = require("../../.test-automation-packrc");
 function getHub() {
   let hub;
   const grid = argv.grid || rc.selenium.grid;
-  if (grid !== undefined && rc.grids !== undefined && rc.grids[grid] !== undefined) {
+  if (
+    grid !== undefined &&
+    rc.grids !== undefined &&
+    rc.grids[grid] !== undefined
+  ) {
     hub = `${rc.grids[grid]}/wd/hub`;
   }
   return hub;
@@ -13,7 +17,7 @@ function getHub() {
 
 function getTestRailConfig() {
   const that = {};
-  if(rc.testrail !== undefined){
+  if (rc.testrail !== undefined) {
     that.upload = argv.u || argv.upload || rc.testrail.upload_results;
     that.suite = rc.testrail.suite_name;
     that.user = rc.testrail.user;
@@ -23,9 +27,11 @@ function getTestRailConfig() {
 
 function getEmailerConfig() {
   const that = {};
-  that.recepients = argv.recepients || rc.emailer.recepients;
-  that.subject = argv.subject || rc.emailer.subject;
-  that.branch = argv.branch || rc.emailer.branch;
+  if (rc.emailer !== undefined) {
+    that.recepients = argv.recepients || rc.emailer.recepients;
+    that.subject = argv.subject || rc.emailer.subject;
+    that.branch = argv.branch || rc.emailer.branch;
+  }
   return that;
 }
 
