@@ -84,6 +84,7 @@ function buildDriver() {
 }
 
 const driver = buildDriver();
+driver.manage().window().maximize();
 
 const getDriver = () => driver;
 
@@ -102,7 +103,6 @@ const switchToTab = async (tab) => driver.switchTo().window(tab);
 
 const visitURL = async (url) => {
   log.info(`Loading the url ${url} in the browser.`);
-  await driver.manage().window().maximize();
   await driver.manage().setTimeouts({
     implicit: config.timeout,
     pageLoad: config.timeout,
