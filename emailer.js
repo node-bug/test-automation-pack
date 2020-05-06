@@ -2,7 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const nodemailer = require("nodemailer");
 const config = require("./config");
-const { log } = require("./logger");
+const { log } = require("debugging-logger");
 
 const that = {};
 

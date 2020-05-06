@@ -12,7 +12,7 @@ const {
   getURL,
   getTitle,
 } = require("./driver");
-const { log } = require("./logger");
+const { log } = require("debugging-logger");
 const {
   populateInput,
   populateClick,

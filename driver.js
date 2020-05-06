@@ -9,8 +9,8 @@ const chromedriver = require("chromedriver");
 require("geckodriver");
 const imagemin = require("imagemin");
 const imageminPngquant = require("imagemin-pngquant");
-const { log } = require("./logger");
-const config = require("./config");
+const { log } = require("debugging-logger");
+const { selenium } = require("./config");
 const { sleep } = require("./utils");
 
 function buildDriver() {
@@ -21,8 +21,8 @@ function buildDriver() {
   let chromeOptions;
   let chromeCapabilities;
   const browser = new webdriver.Builder();
-  log.info(`Launching ${config.browser}`);
-  switch (config.browser.toLowerCase()) {
+  log.info(`Launching ${selenium.browser}`);
+  switch (selenium.browser.toLowerCase()) {
     case "firefox":
       firefoxOptions = {
         args: ["start-maximized", "disable-infobars", "private"],
@@ -32,12 +32,12 @@ function buildDriver() {
           "download.default_directory": `${process.cwd()}/reports/downloads`,
         },
       };
-      firefoxCapabilities = webdriver.Capabilities.firefox();
-      firefoxCapabilities.set("firefoxOptions", firefoxOptions);
-      browser.withCapabilities(firefoxCapabilities);
-      if (config.headless === true) {
-        browser.setFirefoxOptions(new firefox.Options().headless());
+      if (selenium.headless === true) {
+        firefoxOptions.args.push("-headless");
       }
+      firefoxCapabilities = webdriver.Capabilities.firefox();
+      firefoxCapabilities.set("moz:firefoxOptions", firefoxOptions);
+      browser.withCapabilities(firefoxCapabilities);
       break;
     case "safari":
       safariOptions = {
@@ -69,22 +69,21 @@ function buildDriver() {
         },
         excludeSwitches: ["enable-automation"],
       };
+      if (selenium.headless === true) {
+        chromeOptions.args.push("headless");
+      }
       chromeCapabilities = webdriver.Capabilities.chrome();
       chromeCapabilities.set("goog:chromeOptions", chromeOptions);
       browser.withCapabilities(chromeCapabilities);
-      if (config.headless === true) {
-        browser.setChromeOptions(new chrome.Options().headless());
-      }
   }
 
-  if (config.hub !== undefined) {
-    browser.usingServer(config.hub);
+  if (selenium.hub !== undefined) {
+    browser.usingServer(selenium.hub);
   }
   return browser.build();
 }
 
 const driver = buildDriver();
-driver.manage().window().maximize();
 
 const getDriver = () => driver;
 
@@ -101,12 +100,21 @@ const getURL = async () => driver.getCurrentUrl();
 
 const switchToTab = async (tab) => driver.switchTo().window(tab);
 
+const setSize = async (size) => {
+  if (size !== undefined) {
+    return driver.manage().window().setRect(size);
+  } else {
+    return driver.manage().window().maximize();
+  }
+};
+
 const visitURL = async (url) => {
   log.info(`Loading the url ${url} in the browser.`);
+  await setSize(selenium.size);
   await driver.manage().setTimeouts({
-    implicit: config.timeout,
-    pageLoad: config.timeout,
-    script: config.timeout,
+    implicit: selenium.timeout,
+    pageLoad: selenium.timeout,
+    script: selenium.timeout,
   });
   await driver.setFileDetector(new remote.FileDetector());
   await driver.get(url);
@@ -117,7 +125,7 @@ const closeBrowser = async () => {
   log.info(
     `Closing the browser. Current URL is ${await driver.getCurrentUrl()}.`
   );
-  config.capabilities = await getCapabilities();
+  selenium.capabilities = await getCapabilities();
   return driver.quit();
 };
 
@@ -144,7 +152,7 @@ const resetBrowser = async () => {
 
 const activateTab = async (tabName) => {
   const startTimer = Date.now();
-  while (Date.now() - startTimer < config.timeout) {
+  while (Date.now() - startTimer < selenium.timeout) {
     /* eslint-disable no-await-in-loop */
     const tabs = await driver.getAllWindowHandles();
     for (let index = 0; index < tabs.length; index += 1) {
@@ -163,7 +171,7 @@ const activateTab = async (tabName) => {
 
 const closeTabAndSwitch = async (tabName) => {
   const startTimer = Date.now();
-  while (Date.now() - startTimer < config.timeout) {
+  while (Date.now() - startTimer < selenium.timeout) {
     /* eslint-disable no-await-in-loop */
     const tabs = await driver.getAllWindowHandles();
     if (tabs.length < 2) {

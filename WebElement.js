@@ -2,7 +2,7 @@
  * http://usejsdoc.org/
  */
 const { getDriver, getWebDriver } = require("./driver");
-const { log } = require("./logger");
+const { log } = require("debugging-logger");
 
 const that = {};
 

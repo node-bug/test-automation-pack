@@ -2,7 +2,7 @@ const jsonfile = require("jsonfile");
 const rp = require("request-promise-native");
 const jsonwebtoken = require("jsonwebtoken");
 const tough = require("tough-cookie");
-const { log } = require("./logger");
+const { log } = require("debugging-logger");
 
 const cookieMap = new Map();
 const that = {};

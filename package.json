@@ -20,7 +20,7 @@
     "selenium-webdriver": "latest",
     "testrail-api": "latest",
     "tough-cookie": "latest",
-    "winston": "latest"
+    "debugging-logger": "latest"
   },
   "description": "framework for test automation using selenium with gherkin support",
   "devDependencies": {
@@ -80,5 +80,5 @@
   "scripts": {
     "test": "npm run test"
   },
-  "version": "0.0.26"
+  "version": "0.0.27"
 }
