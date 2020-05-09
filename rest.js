@@ -1,8 +1,8 @@
-const jsonfile = require("jsonfile");
-const rp = require("request-promise-native");
-const jsonwebtoken = require("jsonwebtoken");
-const tough = require("tough-cookie");
-const { log } = require("debugging-logger");
+const jsonfile = require('jsonfile');
+const rp = require('request-promise-native');
+const jsonwebtoken = require('jsonwebtoken');
+const tough = require('tough-cookie');
+const { log } = require('debugging-logger');
 
 const cookieMap = new Map();
 const that = {};
@@ -15,8 +15,7 @@ function RestObject(fullFileName) {
   my.cookie = null;
   my.response = null;
 
-  my.getDomainFromURL = async (url) =>
-    url.replace("http://", "").replace("https://", "").split("/")[0];
+  my.getDomainFromURL = async (url) => url.replace('http://', '').replace('https://', '').split('/')[0];
 
   my.setRequestOptions = async (requestType, url, jwt, body) => {
     log.info(`Constructing request options for request type ${requestType}`);
@@ -35,28 +34,28 @@ function RestObject(fullFileName) {
       cookieJar.setCookie(cookie.toString(), `https://${cookie.domain}`);
       return cookieJar;
     }
-    log.error("Cookie is null or undefined. Please validate payload.");
+    log.error('Cookie is null or undefined. Please validate payload.');
     return null;
   };
 
   my.getCookie = async (payload) => {
     if (cookieMap.has(payload)) {
       log.debug(
-        `Cookie exists payload ${JSON.stringify(payload)}. Using existing.`
+        `Cookie exists payload ${JSON.stringify(payload)}. Using existing.`,
       );
       return cookieMap.get(payload);
     }
     log.debug(
       `Cookie does not exist for payload ${JSON.stringify(
-        payload
-      )}. Creating new cookie.`
+        payload,
+      )}. Creating new cookie.`,
     );
     const cookie = new tough.Cookie({
-      key: "id_token",
-      value: jsonwebtoken.sign(payload, "secret", {
-        expiresIn: "1d",
+      key: 'id_token',
+      value: jsonwebtoken.sign(payload, 'secret', {
+        expiresIn: '1d',
       }),
-      domain: "mldev.cloud", // get back here
+      domain: 'mldev.cloud', // get back here
     });
     cookieMap.set(payload, cookie);
     return cookie;
@@ -69,11 +68,11 @@ function RestObject(fullFileName) {
     try {
       const fullresponse = await rp(my.request);
       my.response = fullresponse.body;
-      log.info("Request returned response.");
+      log.info('Request returned response.');
       status = true;
     } catch (err) {
       my.response = err;
-      log.info("Request failed.");
+      log.info('Request failed.');
     }
 
     log.info(`Status code ${my.response.statusCode || my.response.status}`);
@@ -81,19 +80,19 @@ function RestObject(fullFileName) {
   };
 
   that.post = async (url, payload, body) => {
-    await my.setRequestOptions("POST", url, payload, body);
+    await my.setRequestOptions('POST', url, payload, body);
     await my.send();
     return my.response;
   };
 
   that.put = async (url, payload, body) => {
-    await my.setRequestOptions("PUT", url, payload, body);
+    await my.setRequestOptions('PUT', url, payload, body);
     await my.send();
     return my.response;
   };
 
   that.delete = async (url, payload, body) => {
-    await my.setRequestOptions("DELETE", url, payload, body);
+    await my.setRequestOptions('DELETE', url, payload, body);
     await my.send();
     return my.response;
   };

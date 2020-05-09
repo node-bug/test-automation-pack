@@ -60,15 +60,21 @@
   },
   "eslintConfig": {
     "extends": [
-      "airbnb-base",
-      "prettier"
-    ],
-    "plugins": [
-      "prettier"
+      "airbnb-base"
     ],
     "rules": {
-      "prettier/prettier": [
-        "error"
+      "no-plusplus": [
+        "error",
+        {
+          "allowForLoopAfterthoughts": true
+        }
+      ],
+      "max-len": [
+        "error",
+        {
+          "code": 120,
+          "comments": 180
+        }
       ]
     }
   },
@@ -80,5 +86,5 @@
   "scripts": {
     "test": "npm run test"
   },
-  "version": "0.0.27"
+  "version": "0.0.29"
 }

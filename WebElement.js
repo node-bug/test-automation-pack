@@ -1,8 +1,8 @@
 /**
  * http://usejsdoc.org/
  */
-const { getDriver, getWebDriver } = require("./driver");
-const { log } = require("debugging-logger");
+const { log } = require('debugging-logger');
+const { getDriver, getWebDriver } = require('./driver');
 
 const that = {};
 
@@ -35,7 +35,7 @@ function WebElement(element) {
   that.focus = async () => {
     const definition = await that.getBy();
     const returnElement = await my.driver.findElement(definition);
-    return my.driver.executeScript("arguments[0].focus();", returnElement);
+    return my.driver.executeScript('arguments[0].focus();', returnElement);
   };
 
   that.scrollIntoView = async () => {
@@ -43,8 +43,8 @@ function WebElement(element) {
     const returnElement = await my.driver.findElement(definition);
     // eslint-disable-next-line max-len
     return my.driver.executeScript(
-      "arguments[0].scrollIntoView(); window.scrollBy(0, -window.innerHeight / 4);",
-      returnElement
+      'arguments[0].scrollIntoView(); window.scrollBy(0, -window.innerHeight / 4);',
+      returnElement,
     );
   };
 
@@ -53,7 +53,7 @@ function WebElement(element) {
     const returnElement = await my.driver.findElement(definition);
     return my.driver.wait(
       my.webdriver.until.elementIsDisabled(returnElement),
-      3000
+      3000,
     );
   };
 
@@ -97,40 +97,40 @@ function WebElement(element) {
     let byReturn = null;
     const type = my.byType.toLowerCase().trim();
     log.debug(
-      `Getting element ${element.name} By: ${type} for ${my.definition}`
+      `Getting element ${element.name} By: ${type} for ${my.definition}`,
     );
     switch (type) {
-      case "xpath":
+      case 'xpath':
         byReturn = my.by.xpath(my.definition);
         break;
-      case "css":
+      case 'css':
         byReturn = my.by.css(my.definition);
         break;
-      case "id":
+      case 'id':
         byReturn = my.by.id(my.definition);
         break;
-      case "name":
+      case 'name':
         byReturn = my.by.name(my.definition);
         break;
-      case "linktext":
+      case 'linktext':
         byReturn = my.by.linkText(my.definition);
         break;
-      case "classname":
+      case 'classname':
         byReturn = my.by.className(my.definition);
         break;
-      case "partiallinktext":
+      case 'partiallinktext':
         byReturn = my.by.partialLinkText(my.definition);
         break;
-      case "tagname":
+      case 'tagname':
         byReturn = my.by.tagName(my.definition);
         break;
       default:
         // eslint-disable-next-line max-len
         log.error(
-          `The data asked to identify the element ${my.name}  by the type ${my.byType} and that type is not valid.  Please review the data and try again.`
+          `The data asked to identify the element ${my.name}  by the type ${my.byType} and that type is not valid.  Please review the data and try again.`,
         );
         log.error(
-          "Valid types are [xpath, cssSelector, id, name, linkText, partialLinkText, className, tagName]"
+          'Valid types are [xpath, cssSelector, id, name, linkText, partialLinkText, className, tagName]',
         );
     }
     return byReturn;

@@ -1,8 +1,8 @@
-const path = require("path");
-const fs = require("fs");
-const nodemailer = require("nodemailer");
-const config = require("./config");
-const { log } = require("debugging-logger");
+const path = require('path');
+const fs = require('fs');
+const nodemailer = require('nodemailer');
+const { log } = require('debugging-logger');
+const config = require('./config');
 
 const that = {};
 
@@ -14,7 +14,7 @@ function gmailer() {
 
     const directoryPath = `${process.cwd()}/reports/`;
     fs.readdirSync(directoryPath).forEach((file) => {
-      if (path.extname(file) === ".html") {
+      if (path.extname(file) === '.html') {
         attachments.push({
           path: directoryPath + file,
         });
@@ -30,15 +30,15 @@ function gmailer() {
   my.config = (env) => {
     const settings = {
       id:
-        "701768719333-0f12h7i269l7n2odh5ne80u5mdkth618.apps.googleusercontent.com",
-      secret: "ADEpn82HAOHH9_8lqzpwRIXd",
-      username: "thomas.dsilva.contractor@macmillan.com",
+        '701768719333-0f12h7i269l7n2odh5ne80u5mdkth618.apps.googleusercontent.com',
+      secret: 'ADEpn82HAOHH9_8lqzpwRIXd',
+      username: 'thomas.dsilva.contractor@macmillan.com',
       refreshToken:
-        "1/3ayBIUgNJWANUL1-rISK50oaD6VlrWuk4XvzG03kzt9rO_ekPBdfvgDHcXLpFiNh",
+        '1/3ayBIUgNJWANUL1-rISK50oaD6VlrWuk4XvzG03kzt9rO_ekPBdfvgDHcXLpFiNh',
       // eslint-disable-next-line max-len
       accessToken:
-        "ya29.GltuByf5jWOhzFHv_lbBLQvIahPif5RqTtn_r9TMh7BmFxwaDwn2WJz_zyBGvuVbaGRfElVNYrkqaKDfe9MHic72Mc9W66OeFa-LikboAx0eoZxyq-H1cGT1LbFU1",
-      sender: "thomas.dsilva.contractor@macmillan.com",
+        'ya29.GltuByf5jWOhzFHv_lbBLQvIahPif5RqTtn_r9TMh7BmFxwaDwn2WJz_zyBGvuVbaGRfElVNYrkqaKDfe9MHic72Mc9W66OeFa-LikboAx0eoZxyq-H1cGT1LbFU1',
+      sender: 'thomas.dsilva.contractor@macmillan.com',
       recepients: config.emailer.recepients,
       subject: config.emailer.subject,
       // eslint-disable-next-line max-len
@@ -48,15 +48,14 @@ function gmailer() {
     return settings;
   };
 
-  my.transporter = (id, secret) =>
-    nodemailer.createTransport({
-      service: "Gmail",
-      auth: {
-        type: "OAuth2",
-        clientId: id,
-        clientSecret: secret,
-      },
-    });
+  my.transporter = (id, secret) => nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+      type: 'OAuth2',
+      clientId: id,
+      clientSecret: secret,
+    },
+  });
 
   my.options = (settings) => {
     const options = {
