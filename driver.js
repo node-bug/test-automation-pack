@@ -25,7 +25,7 @@ function buildDriver() {
   switch (selenium.browser.toLowerCase()) {
     case 'firefox':
       firefoxOptions = {
-        args: ['start-maximized', 'disable-infobars', 'private'],
+        args: ['-private'],
         prefs: {
           'profile.content_settings.exceptions.automatic_downloads.*.setting': 1,
           'download.prompt_for_download': false,
@@ -61,7 +61,7 @@ function buildDriver() {
         new chrome.ServiceBuilder(chromedriver.path).build(),
       );
       chromeOptions = {
-        args: ['start-maximized', 'disable-extensions', 'incognito'],
+        args: ['disable-extensions', 'incognito'],
         prefs: {
           'profile.content_settings.exceptions.automatic_downloads.*.setting': 1,
           'download.prompt_for_download': false,
