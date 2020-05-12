@@ -41,6 +41,7 @@ async function populateCheckbox(selector, value, WebElementObject) {
       log.debug('Checkbox is already unchecked.');
     }
   }
+  return true;
 }
 
 async function populateSelect(selector, item, WebElementObject) {
@@ -83,6 +84,7 @@ async function populateSelect(selector, item, WebElementObject) {
     log.debug('Hitting return key');
     await selector.sendKeys(Key.RETURN);
   }
+  return true;
 }
 
 async function populateTextField(selector, value, WebElementObject) {
@@ -153,6 +155,7 @@ async function populateTextField(selector, value, WebElementObject) {
       log.error(e);
     }
   }
+  return true;
 }
 
 async function populateClick(selector, value, WebElementObject) {
@@ -259,6 +262,7 @@ async function populateClick(selector, value, WebElementObject) {
       log.error(e);
     }
   }
+  return true;
 }
 
 async function populateFile(selector, value, WebElementObject) {
@@ -328,6 +332,8 @@ async function populateFile(selector, value, WebElementObject) {
       log.error(e);
     }
   }
+
+  return true;
 }
 
 async function populateRichTextField(selector, value, WebElementObject) {
@@ -362,6 +368,7 @@ async function populateRichTextField(selector, value, WebElementObject) {
     await actions.sendKeys(value).perform();
   }
   log.debug(`Post populate text field value: ${value}`);
+  return true;
 }
 
 async function populateInput(selector, value, WebElementObject) {
@@ -409,6 +416,8 @@ async function populateInput(selector, value, WebElementObject) {
         `ERROR: populateInput() failed because the input type ${type} has not been coded for.`,
       );
   }
+
+  return true;
 }
 
 module.exports = {
