@@ -2,12 +2,12 @@
  * http://usejsdoc.org/
  */
 const { assert, expect } = require('chai');
+const { Until } = require('selenium-webdriver');
 const jsonfile = require('jsonfile');
 const { log } = require('debugging-logger');
 const WebElement = require('./WebElement');
 const {
   getDriver,
-  getWebDriver,
   activateTab,
   closeTabAndSwitch,
   getURL,
@@ -26,9 +26,7 @@ function PageObject(pageNameInput, pageNameDirectoryInput) {
   that.pageName = pageNameInput;
   that.pageDefinitionFileName = pageNameDirectoryInput + pageNameInput;
   that.pageElements = new Map(); // a hash of all of the web elements for this page.
-
   that.driver = getDriver();
-  that.webdriver = getWebDriver();
 
   const addElement = (elementName, elements) => that.pageElements.set(elementName, elements);
 
@@ -122,7 +120,7 @@ function PageObject(pageNameInput, pageNameDirectoryInput) {
     } else if (typeof elementName === 'number') {
       log.debug(`Switching to frame number ${elementName}`);
       await that.driver.wait(
-        that.webdriver.until.ableToSwitchToFrame(elementName, config.timeout),
+        Until.ableToSwitchToFrame(elementName, config.timeout),
       );
     } else {
       log.debug(`Switching to frame ${elementName}`);
@@ -131,7 +129,7 @@ function PageObject(pageNameInput, pageNameDirectoryInput) {
         const WebElementObject = await WebElement(WebElementData);
         const webElement = await WebElementObject.getWebElement();
         await that.driver.wait(
-          that.webdriver.until.ableToSwitchToFrame(webElement, config.timeout),
+          Until.ableToSwitchToFrame(webElement, config.timeout),
         );
       }
     }
@@ -639,7 +637,7 @@ function PageObject(pageNameInput, pageNameDirectoryInput) {
 
   const genericAlertOperations = async (operation) => {
     let retval;
-    if (await that.driver.wait(that.webdriver.until.alertIsPresent())) {
+    if (await that.driver.wait(Until.alertIsPresent())) {
       const alert = that.driver.switchTo().alert();
       switch (operation.toLowerCase()) {
         case 'accept':

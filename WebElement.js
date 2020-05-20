@@ -2,7 +2,8 @@
  * http://usejsdoc.org/
  */
 const { log } = require('debugging-logger');
-const { getDriver, getWebDriver } = require('./driver');
+const { getDriver } = require('./driver');
+const { By, Until } = require('selenium-webdriver'); 
 
 const that = {};
 
@@ -10,12 +11,10 @@ function WebElement(element) {
   const my = {};
 
   my.driver = getDriver();
-  my.webdriver = getWebDriver();
   my.element = element;
   my.byType = element.byType.toLowerCase();
   my.definition = element ? element.definition : null;
   my.specialInstr = null;
-  my.by = my.webdriver.By;
 
   that.getWebElement = async () => {
     const definition = await that.getBy();
@@ -52,7 +51,7 @@ function WebElement(element) {
     const definition = await that.getBy();
     const returnElement = await my.driver.findElement(definition);
     return my.driver.wait(
-      my.webdriver.until.elementIsDisabled(returnElement),
+      Until.elementIsDisabled(returnElement),
       3000,
     );
   };
@@ -101,28 +100,28 @@ function WebElement(element) {
     );
     switch (type) {
       case 'xpath':
-        byReturn = my.by.xpath(my.definition);
+        byReturn = By.xpath(my.definition);
         break;
       case 'css':
-        byReturn = my.by.css(my.definition);
+        byReturn = By.css(my.definition);
         break;
       case 'id':
-        byReturn = my.by.id(my.definition);
+        byReturn = By.id(my.definition);
         break;
       case 'name':
-        byReturn = my.by.name(my.definition);
+        byReturn = By.name(my.definition);
         break;
       case 'linktext':
-        byReturn = my.by.linkText(my.definition);
+        byReturn = By.linkText(my.definition);
         break;
       case 'classname':
-        byReturn = my.by.className(my.definition);
+        byReturn = By.className(my.definition);
         break;
       case 'partiallinktext':
-        byReturn = my.by.partialLinkText(my.definition);
+        byReturn = By.partialLinkText(my.definition);
         break;
       case 'tagname':
-        byReturn = my.by.tagName(my.definition);
+        byReturn = By.tagName(my.definition);
         break;
       default:
         // eslint-disable-next-line max-len
