@@ -3,7 +3,7 @@
  */
 const { log } = require('debugging-logger');
 const { getDriver } = require('./driver');
-const { By, Until } = require('selenium-webdriver'); 
+const { By, until } = require('selenium-webdriver'); 
 
 const that = {};
 
@@ -51,7 +51,7 @@ function WebElement(element) {
     const definition = await that.getBy();
     const returnElement = await my.driver.findElement(definition);
     return my.driver.wait(
-      Until.elementIsDisabled(returnElement),
+      until.elementIsDisabled(returnElement),
       3000,
     );
   };

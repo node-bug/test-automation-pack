@@ -1,7 +1,7 @@
 /**
  * http://usejsdoc.org/
  */
-const {By, Until} = require('selenium-webdriver');
+const {By, until} = require('selenium-webdriver');
 const remote = require('selenium-webdriver/remote');
 const imagemin = require('imagemin');
 const imageminPngquant = require('imagemin-pngquant');
@@ -145,9 +145,9 @@ const takeScreenshot = async () => {
 const onWaitForElementToBeVisible = async (element) => {
   log.debug(`Waiting for element (${element}) to appear...`);
   try {
-    await driver.wait(Until.elementLocated(element, 10000));
+    await driver.wait(until.elementLocated(element, 10000));
     await driver.wait(
-      Until.elementIsVisible(driver.findElement(element)),
+      until.elementIsVisible(driver.findElement(element)),
       10000,
     );
   } catch (err) {
@@ -164,9 +164,9 @@ const onPageLoadedWaitById = async (elementIdOnNextPage) => {
 const onWaitForElementToBeInvisible = async (element) => {
   log.debug('Waiting for element to disappear...');
   try {
-    await driver.wait(Until.elementLocated(element, 10000));
+    await driver.wait(until.elementLocated(element, 10000));
     await driver.wait(
-      Until.elementIsNotVisible(driver.findElement(element)),
+      until.elementIsNotVisible(driver.findElement(element)),
       15000,
     );
   } catch (err) {
@@ -177,7 +177,7 @@ const onWaitForElementToBeInvisible = async (element) => {
 const onWaitForWebElementToBeEnabled = async (webElement) => {
   log.debug('Waiting for webElement to become enabled...');
   try {
-    await driver.wait(Until.elementIsEnabled(webElement, 10000));
+    await driver.wait(until.elementIsEnabled(webElement, 10000));
   } catch (err) {
     log.error(err.stack);
   }
@@ -186,7 +186,7 @@ const onWaitForWebElementToBeEnabled = async (webElement) => {
 const onWaitForWebElementToBeDisabled = async (webElement) => {
   log.debug('Waiting for webElement to become disabled...');
   try {
-    await driver.wait(Until.elementIsDisabled(webElement), 3000);
+    await driver.wait(until.elementIsDisabled(webElement), 3000);
   } catch (err) {
     log.error(err.stack);
   }
@@ -195,7 +195,7 @@ const onWaitForWebElementToBeDisabled = async (webElement) => {
 const onWaitForElementToBeLocated = async (element) => {
   log.debug('Waiting for element to become located...');
   try {
-    await driver.wait(Until.elementLocated(element, 10000));
+    await driver.wait(until.elementLocated(element, 10000));
   } catch (err) {
     log.error(err.stack);
   }

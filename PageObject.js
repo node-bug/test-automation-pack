@@ -2,7 +2,7 @@
  * http://usejsdoc.org/
  */
 const { assert, expect } = require('chai');
-const { Until } = require('selenium-webdriver');
+const { until } = require('selenium-webdriver');
 const jsonfile = require('jsonfile');
 const { log } = require('debugging-logger');
 const WebElement = require('./WebElement');
@@ -120,7 +120,7 @@ function PageObject(pageNameInput, pageNameDirectoryInput) {
     } else if (typeof elementName === 'number') {
       log.debug(`Switching to frame number ${elementName}`);
       await that.driver.wait(
-        Until.ableToSwitchToFrame(elementName, config.timeout),
+        until.ableToSwitchToFrame(elementName, config.timeout),
       );
     } else {
       log.debug(`Switching to frame ${elementName}`);
@@ -129,7 +129,7 @@ function PageObject(pageNameInput, pageNameDirectoryInput) {
         const WebElementObject = await WebElement(WebElementData);
         const webElement = await WebElementObject.getWebElement();
         await that.driver.wait(
-          Until.ableToSwitchToFrame(webElement, config.timeout),
+          until.ableToSwitchToFrame(webElement, config.timeout),
         );
       }
     }
@@ -637,7 +637,7 @@ function PageObject(pageNameInput, pageNameDirectoryInput) {
 
   const genericAlertOperations = async (operation) => {
     let retval;
-    if (await that.driver.wait(Until.alertIsPresent())) {
+    if (await that.driver.wait(until.alertIsPresent())) {
       const alert = that.driver.switchTo().alert();
       switch (operation.toLowerCase()) {
         case 'accept':
